@@ -177,7 +177,7 @@ export default function Home() {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" />
                 </svg>
               </div>
-              <span className={`text-lg font-semibold ${theme.text}`}>MiniMax TTS</span>
+              <span className={`text-lg font-semibold ${theme.text}`}>大师兄的AI配音坊</span>
             </div>
             <div className="flex items-center gap-3">
               <div className={`px-4 py-1.5 rounded-full ${darkMode ? 'bg-gray-800' : 'bg-gray-100'} border ${theme.border}`}>
@@ -233,7 +233,7 @@ export default function Home() {
                   <div className="flex items-center gap-4">
                     <span className={`text-sm ${theme.textSecondary}`}>{charCount} 字符</span>
                     {charCount > 0 && (
-                      <span className={`text-sm ${theme.textSecondary}`}>💰 {costCredits} 积分 (1积分=10000字符)</span>
+                      <span className={`text-sm ${theme.textSecondary}`}>💰 {costCredits} 积分 (100积分=10000字符)</span>
                     )}
                   </div>
                   <button onClick={generateAudio} disabled={loading || !text.trim()} className={`px-6 py-2.5 ${theme.button} rounded-xl text-sm font-medium disabled:opacity-50`}>
@@ -292,7 +292,7 @@ export default function Home() {
           <div className="w-16 h-16 bg-gray-900 dark:bg-white rounded-2xl flex items-center justify-center mx-auto mb-4">
             <svg className="w-8 h-8 text-white dark:text-gray-900" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" /></svg>
           </div>
-          <h1 className={`text-2xl font-semibold ${theme.text}`}>MiniMax TTS</h1>
+          <h1 className={`text-2xl font-semibold ${theme.text}`}>大师兄的AI配音坊</h1>
           <p className={theme.textSecondary}>极速调用你的克隆声音</p>
         </div>
         <div className={`${theme.card} rounded-2xl p-6 shadow-sm`}>
