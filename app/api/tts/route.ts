@@ -1,15 +1,8 @@
 import { NextResponse } from 'next/server'
-import { getToken } from 'next-auth/jwt'
 
 export const runtime = 'nodejs'
 
 export async function POST(req: Request) {
-  const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET || 'dev-secret-change-in-prod' })
-  
-  if (!token) {
-    return NextResponse.json({ error: '请先登录' }, { status: 401 })
-  }
-
   let body
   try {
     body = await req.json()
@@ -35,7 +28,7 @@ export async function POST(req: Request) {
       },
       body: JSON.stringify({
         model: 'speech-2.6-hd',
-        text: text.slice(0, 1000), // 限制长度
+        text: text.slice(0, 1000),
         voice_setting: {
           voice_id: voiceId,
           speed: 1,
@@ -51,23 +44,24 @@ export async function POST(req: Request) {
     })
 
     const data = await response.json()
+    console.log('MiniMax response:', JSON.stringify(data).slice(0, 200))
 
     if (data.base_resp?.status_code !== 0) {
-      return NextResponse.json({ error: data.base_resp?.status_msg || 'API错误', details: data }, { status: 500 })
+      return NextResponse.json({ error: data.base_resp?.status_msg || 'API错误' }, { status: 500 })
     }
 
     const audioHex = data.data?.audio
     if (!audioHex) {
-      return NextResponse.json({ error: '没有生成音频', details: data }, { status: 500 })
+      return NextResponse.json({ error: '没有生成音频' }, { status: 500 })
     }
 
-    // 使用 Buffer 转换
     const buffer = Buffer.from(audioHex, 'hex')
     const base64 = buffer.toString('base64')
     const audioUrl = `data:audio/mp3;base64,${base64}`
 
-    return NextResponse.json({ audio_url: audioUrl, success: true })
+    return NextResponse.json({ audio_url: audioUrl })
   } catch (err) {
+    console.error('Error:', err)
     return NextResponse.json({ error: String(err) }, { status: 500 })
   }
 }
