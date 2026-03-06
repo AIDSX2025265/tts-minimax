@@ -29,25 +29,24 @@ export default function SignIn() {
         setLoading(false)
         return
       }
-      // 注册新用户，赠送10000积分
+      // 注册新用户，积分从白名单或手动充值获得，不默认赠送
       const users = JSON.parse(localStorage.getItem('tts_users') || '[]')
       if (users.find((u: any) => u.email === email)) {
         setError('该邮箱已注册')
         setLoading(false)
         return
       }
-      users.push({ email, password, credits: 10000 })
+      // 新用户默认0积分，需要管理员手动充值
+      users.push({ email, password, credits: 0 })
       localStorage.setItem('tts_users', JSON.stringify(users))
-      // 自动登录
-      const result = await signIn('credentials', { email, password, register: 'true', redirect: false })
+      
+      const result = await signIn('credentials', { email, password, redirect: false })
       if (result?.ok) router.push('/')
       else setError('注册失败')
     } else {
-      // 登录验证
       const users = JSON.parse(localStorage.getItem('tts_users') || '[]')
       const user = users.find((u: any) => u.email === email && u.password === password)
       if (!user) {
-        // 测试账号
         if (email === 'test@example.com' && password === 'password123') {
           const result = await signIn('credentials', { email, password, redirect: false })
           if (result?.ok) router.push('/')
@@ -74,7 +73,7 @@ export default function SignIn() {
             </svg>
           </div>
           <h1 className="text-2xl font-bold text-white">{isRegister ? '创建账号' : '欢迎回来'}</h1>
-          <p className="text-green-400">{isRegister ? '注册送10000积分' : '登录你的账号'}</p>
+          <p className="text-green-400">{isRegister ? '新用户0积分，请联系管理员充值' : '登录你的账号'}</p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-4">
@@ -144,9 +143,7 @@ export default function SignIn() {
 
         {!isRegister && (
           <div className="mt-6 p-4 bg-green-900/30 border border-green-700/30 rounded-xl">
-            <p className="text-green-400 text-sm text-center mb-2">💡 提示</p>
-            <p className="text-green-500 text-xs text-center">新用户注册赠送10000积分</p>
-            <p className="text-green-500 text-xs text-center">1000字消耗约¥0.07</p>
+            <p className="text-green-400 text-sm text-center">💡 新用户请联系管理员充值积分</p>
           </div>
         )}
 
