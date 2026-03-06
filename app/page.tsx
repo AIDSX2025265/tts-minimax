@@ -301,7 +301,7 @@ export default function Home() {
           </button>
           <div className={`mt-6 pt-6 border-t ${darkMode ? 'border-green-800/30' : 'border-green-200'}`}>
             <div className="grid grid-cols-3 gap-4 text-center">
-              <div><div className="text-2xl mb-1">🎙️</div><p className={`${theme.textSecondary} text-xs`}>川哥音色</p></div>
+              <div><div className="text-2xl mb-1">🎤</div><p className={`${theme.textSecondary} text-xs`}>真人音色</p></div>
               <div><div className="text-2xl mb-1">⚡</div><p className={`${theme.textSecondary} text-xs`}>极速生成</p></div>
               <div><div className="text-2xl mb-1">💎</div><p className={`${theme.textSecondary} text-xs`}>100积分=1万字</p></div>
             </div>
