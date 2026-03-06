@@ -41,7 +41,7 @@ export default function Home() {
   const [savedList, setSavedList] = useState<AudioItem[]>([])
   const [showSaved, setShowSaved] = useState(false)
   const [emotion, setEmotion] = useState('')
-  const [voice, setVoice] = useState(') = useState('')
+  const [voice, setVoice] = useState('chuan_ge')
   const [speed, setSpeed] = useState(1)
   const [darkMode, setDarkMode] = useState(false)
   const [credits, setCredits] = useState(0)
