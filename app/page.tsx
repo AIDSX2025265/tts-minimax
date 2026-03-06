@@ -3,6 +3,10 @@
 import { signIn, signOut, useSession } from 'next-auth/react'
 import { useState, useEffect } from 'react'
 
+const VOICES = [
+  { id: 'chuan_ge', name: '川哥' },
+]
+
 const EMOTIONS = [
   { id: '', name: '标准' },
   { id: 'happy', name: '开心' },
@@ -18,8 +22,6 @@ const SPEEDS = [
   { id: 1.5, name: '1.5x 极速' },
 ]
 
-const PRICE_PER_1K = 0.01
-const CNY_RATE = 7
 const CHARS_PER_CREDIT = 10000
 
 interface AudioItem {
@@ -39,14 +41,13 @@ export default function Home() {
   const [savedList, setSavedList] = useState<AudioItem[]>([])
   const [showSaved, setShowSaved] = useState(false)
   const [emotion, setEmotion] = useState('')
+  const [voice, setVoice] = useState(') = useState('')
   const [speed, setSpeed] = useState(1)
   const [darkMode, setDarkMode] = useState(false)
   const [credits, setCredits] = useState(0)
-  const [showRecharge, setShowRecharge] = useState(false)
 
   const charCount = text.length
-  const costCredits = Math.ceil(charCount / 10000)
-  const costCNY = (charCount / 1000) * PRICE_PER_1K * CNY_RATE
+  const costCredits = Math.ceil(charCount / CHARS_PER_CREDIT)
 
   useEffect(() => {
     const saved = localStorage.getItem('darkMode')
@@ -92,8 +93,7 @@ export default function Home() {
   const generateAudio = async () => {
     if (!text.trim()) return
     if (costCredits > credits && session?.user?.email !== 'test@example.com') {
-      alert('积分不足！请先充值')
-      setShowRecharge(true)
+      alert('积分不足！请联系管理员充值')
       return
     }
     
@@ -124,18 +124,6 @@ export default function Home() {
       alert('生成失败')
     }
     setLoading(false)
-  }
-
-  const recharge = () => {
-    if (!session?.user?.email) return
-    const users = JSON.parse(localStorage.getItem('tts_users') || '[]')
-    const userIndex = users.findIndex((u: any) => u.email === session.user?.email)
-    if (userIndex >= 0) {
-      users[userIndex].credits = (users[userIndex].credits || 0) + 1000
-      setCredits(users[userIndex].credits)
-      localStorage.setItem('tts_users', JSON.stringify(users))
-      alert('充值成功！+10000积分')
-    }
   }
 
   const saveAudio = (item: AudioItem) => {
@@ -207,11 +195,6 @@ export default function Home() {
               <div className={`px-4 py-2 rounded-xl ${darkMode ? 'bg-gray-700' : 'bg-green-900/50'} border ${darkMode ? 'border-gray-600' : 'border-green-700/50'}`}>
                 <span className={`${theme.textMuted2} text-sm`}>💰 积分: {isTestUser ? '无限' : credits}</span>
               </div>
-              {!isTestUser && (
-                <button onClick={() => setShowRecharge(!showRecharge)} className="px-3 py-2 rounded-lg text-sm bg-yellow-500 hover:bg-yellow-400 text-white">
-                  充值
-                </button>
-              )}
               <button onClick={() => setShowSaved(!showSaved)} className={`px-3 py-2 rounded-lg text-sm transition ${showSaved ? theme.buttonBg + ' text-white' : (darkMode ? 'bg-gray-700 text-gray-300' : 'bg-green-900/50 text-green-300')}`}>
                 {showSaved ? '📋 历史' : `⭐ 保存 (${savedList.length})`}
               </button>
@@ -232,22 +215,6 @@ export default function Home() {
           </div>
         </header>
 
-        {showRecharge && !isTestUser && (
-          <div className="max-w-4xl mx-auto px-6 py-4">
-            <div className={`${theme.card} border rounded-xl p-6`}>
-              <h3 className={`text-lg font-bold ${theme.text} mb-4`}>💳 充值积分</h3>
-              <div className="grid grid-cols-3 gap-4">
-                <button onClick={recharge} className={`p-4 rounded-xl border ${darkMode ? 'border-gray-600 hover:bg-gray-700' : 'border-green-700 hover:bg-green-900/30'} ${theme.text} transition`}>
-                  <div className="text-2xl font-bold mb-1">1000</div>
-                  <div className="text-sm text-green-400">积分</div>
-                  <div className="text-xs text-gray-500 mt-1">¥7</div>
-                </button>
-              </div>
-              <p className={`text-xs mt-4 ${theme.textMuted2}`}>* 1积分 = 100000字符</p>
-            </div>
-          </div>
-        )}
-
         <main className="max-w-4xl mx-auto px-6 py-8">
           <div className={`${theme.card} backdrop-blur-sm border rounded-2xl p-6 mb-8`}>
             <h2 className={`text-lg font-semibold ${theme.text} mb-4 flex items-center gap-2`}>
@@ -257,7 +224,13 @@ export default function Home() {
               </svg>
               声音设置
             </h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div>
+                <label className={`block ${theme.accent} text-sm mb-2`}>音色</label>
+                <select value={voice || 'chuan_ge'} onChange={(e) => setVoice(e.target.value)} className={`w-full p-3 ${theme.select} rounded-xl focus:outline-none ${darkMode ? 'focus:border-gray-500' : 'focus:border-green-500'}`}>
+                  <option value="chuan_ge" className={theme.selectOption}>川哥</option>
+                </select>
+              </div>
               <div>
                 <label className={`block ${theme.accent} text-sm mb-2`}>情感</label>
                 <select value={emotion} onChange={(e) => setEmotion(e.target.value)} className={`w-full p-3 ${theme.select} rounded-xl focus:outline-none ${darkMode ? 'focus:border-gray-500' : 'focus:border-green-500'}`}>
@@ -283,19 +256,16 @@ export default function Home() {
                 <textarea value={text} onChange={(e) => setText(e.target.value)} placeholder="输入要转换的文字..." className={`w-full h-40 p-4 ${theme.input} rounded-xl focus:outline-none transition resize-none`} />
                 <div className="flex justify-between items-center mt-4">
                   <div className="flex items-center gap-4">
-                    <span className={`${darkMode ? 'text-gray-500' : 'text-green-600'} text-sm`}>{charCount} / 1000 字符</span>
+                    <span className={`${darkMode ? 'text-gray-500' : 'text-green-600'} text-sm`}>{charCount} 字符</span>
                     {charCount > 0 && (
                       <span className={`${darkMode ? 'text-gray-500' : 'text-green-600'} text-sm`}>
-                        💰 消耗: {costCredits}积分 ≈ ¥{costCNY.toFixed(2)}
+                        💰 消耗: {costCredits} 积分 (1积分 = 10000字符)
                       </span>
                     )}
                   </div>
                   <button onClick={generateAudio} disabled={loading || !text.trim()} className={`px-8 py-3 bg-gradient-to-r ${theme.buttonBg} text-white rounded-xl font-medium disabled:opacity-50 disabled:cursor-not-allowed transition-all transform hover:scale-105 active:scale-95 flex items-center gap-2 shadow-lg`}>
                     {loading ? (<><svg className="animate-spin w-5 h-5" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path></svg>生成中...</>) : (<><svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>生成音频</>)}
                   </button>
-                </div>
-                <div className={`mt-3 text-xs ${darkMode ? 'text-gray-500' : 'text-green-700/70'}`}>
-                  📊 计费: 1积分 = 100000字符
                 </div>
               </>
             )}
@@ -370,9 +340,9 @@ export default function Home() {
           </button>
           <div className="mt-6 pt-6 border-t border-gray-700">
             <div className="grid grid-cols-3 gap-4 text-center">
-              <div><div className="text-2xl mb-1">🎙️</div><p className={darkMode ? 'text-gray-500' : 'text-green-500'} text-xs>克隆声音</p></div>
+              <div><div className="text-2xl mb-1">🎙️</div><p className={darkMode ? 'text-gray-500' : 'text-green-500'} text-xs>川哥音色</p></div>
               <div><div className="text-2xl mb-1">⚡</div><p className={darkMode ? 'text-gray-500' : 'text-green-500'} text-xs>极速生成</p></div>
-              <div><div className="text-2xl mb-1">💰</div><p className={darkMode ? 'text-gray-500' : 'text-green-500'} text-xs>积分消耗</p></div>
+              <div><div className="text-2xl mb-1">💰</div><p className={darkMode ? 'text-gray-500' : 'text-green-500'} text-xs>1积分=1万字</p></div>
             </div>
           </div>
         </div>
