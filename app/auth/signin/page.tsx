@@ -79,7 +79,7 @@ export default function SignIn() {
         </form>
 
         <div className="mt-6 text-center">
-          <button onClick={() => { setIsRegister(!isRegister); setError(''); }} className="text-gray-600 hover:text-green-300 text-sm">{isRegister ? '已有账号？登录' : '没有账号？注册'}</button>
+          <button onClick={() => { setIsRegister(!isRegister); setError(''); }} className="text-gray-600 hover:text-gray-600 text-sm">{isRegister ? '已有账号？登录' : '没有账号？注册'}</button>
         </div>
 
         {!isRegister && (
@@ -88,7 +88,7 @@ export default function SignIn() {
           </div>
         )}
 
-        <button onClick={() => router.push('/')} className="w-full mt-4 py-3 text-green-600 hover:text-green-500 text-sm">← 返回首页</button>
+        <button onClick={() => router.push('/')} className="w-full mt-4 py-3 text-gray-600 hover:text-gray-700 text-sm">← 返回首页</button>
       </div>
     </div>
   )

@@ -105,7 +105,7 @@ export default function Admin() {
         <div className="flex justify-between items-center mb-8">
           <h1 className="text-3xl font-bold text-white">管理后台</h1>
           <div className="flex gap-4">
-            <button onClick={() => setShowWechat(!showWechat)} className="px-4 py-2 bg-green-600 text-white rounded-lg">微信收款码</button>
+            <button onClick={() => setShowWechat(!showWechat)} className="px-4 py-2 bg-blue-500 text-white rounded-lg">微信收款码</button>
             <button onClick={() => setIsAdmin(false)} className="px-4 py-2 bg-gray-700 text-white rounded-lg">退出</button>
           </div>
         </div>
@@ -118,8 +118,8 @@ export default function Admin() {
         )}
 
         <div className="flex gap-4 mb-6">
-          <button onClick={() => setTab('users')} className={`px-6 py-3 rounded-lg ${tab === 'users' ? 'bg-green-600 text-white' : 'bg-blue-900/50 text-green-300'}`}>用户管理 ({users.length})</button>
-          <button onClick={() => setTab('codes')} className={`px-6 py-3 rounded-lg ${tab === 'codes' ? 'bg-green-600 text-white' : 'bg-blue-900/50 text-green-300'}`}>兑换码管理 ({codes.length})</button>
+          <button onClick={() => setTab('users')} className={`px-6 py-3 rounded-lg ${tab === 'users' ? 'bg-blue-500 text-white' : 'bg-gray-100 text-gray-600'}`}>用户管理 ({users.length})</button>
+          <button onClick={() => setTab('codes')} className={`px-6 py-3 rounded-lg ${tab === 'codes' ? 'bg-blue-500 text-white' : 'bg-gray-100 text-gray-600'}`}>兑换码管理 ({codes.length})</button>
         </div>
 
         {tab === 'users' && (
@@ -129,7 +129,7 @@ export default function Admin() {
               <div className="flex gap-4">
                 <input type="email" placeholder="用户邮箱" value={targetEmail} onChange={(e) => setTargetEmail(e.target.value)} className="flex-1 p-3 bg-white border border-gray-300 rounded-xl text-white" />
                 <input type="number" placeholder="积分" value={rechargeAmount} onChange={(e) => setRechargeAmount(Number(e.target.value))} className="w-32 p-3 bg-white border border-gray-300 rounded-xl text-white" />
-                <button onClick={rechargeUser} className="px-6 py-3 bg-green-600 text-white rounded-xl">充值</button>
+                <button onClick={rechargeUser} className="px-6 py-3 bg-blue-500 text-white rounded-xl">充值</button>
               </div>
             </div>
             <div className="bg-white border border-gray-200 rounded-2xl overflow-hidden">
@@ -157,7 +157,7 @@ export default function Admin() {
               <h2 className="text-xl font-bold text-white mb-4">生成兑换码</h2>
               <div className="flex gap-4">
                 <input type="number" placeholder="数量" value={newCodeCount} onChange={(e) => setNewCodeCount(Number(e.target.value))} className="w-32 p-3 bg-white border border-gray-300 rounded-xl text-white" />
-                <button onClick={generateCodes} className="px-6 py-3 bg-green-600 text-white rounded-xl">生成 (每个10000积分)</button>
+                <button onClick={generateCodes} className="px-6 py-3 bg-blue-500 text-white rounded-xl">生成 (每个10000积分)</button>
               </div>
             </div>
             <div className="bg-white border border-gray-200 rounded-2xl overflow-hidden">

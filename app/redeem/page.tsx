@@ -60,7 +60,7 @@ export default function Redeem() {
 
           {!session && <p className="text-yellow-400 text-center mt-4 text-sm">请先登录后再兑换</p>}
 
-          <button onClick={() => router.push('/')} className="w-full mt-4 py-3 text-green-500 hover:text-gray-600">返回首页</button>
+          <button onClick={() => router.push('/')} className="w-full mt-4 py-3 text-gray-600 hover:text-gray-700">返回首页</button>
         </div>
       </div>
     </div>
