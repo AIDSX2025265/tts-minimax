@@ -18,9 +18,9 @@ const SPEEDS = [
   { id: 1.5, name: '1.5x 极速' },
 ]
 
-const PRICE_PER_1K = 0.01 // 1000字符 = $0.01
+const PRICE_PER_1K = 0.01
 const CNY_RATE = 7
-const CHARS_PER_CREDIT = 1000 // 1积分 = 1000字符
+const CHARS_PER_CREDIT = 1000
 
 interface AudioItem {
   id: string
@@ -61,13 +61,10 @@ export default function Home() {
       localStorage.setItem('savedAudios', JSON.stringify(filtered))
     }
 
-    // 加载用户积分
     if (session?.user?.email) {
       const users = JSON.parse(localStorage.getItem('tts_users') || '[]')
       const user = users.find((u: any) => u.email === session.user?.email)
-      if (user) {
-        setCredits(user.credits || 0)
-      }
+      if (user) setCredits(user.credits || 0)
     }
   }, [session])
 
@@ -95,7 +92,7 @@ export default function Home() {
   const generateAudio = async () => {
     if (!text.trim()) return
     if (costCredits > credits && session?.user?.email !== 'test@example.com') {
-      alert('积分不足！请先充值积分')
+      alert('积分不足！请先充值')
       setShowRecharge(true)
       return
     }
@@ -109,10 +106,7 @@ export default function Home() {
       })
       const data = await res.json()
       if (data.audio_url) {
-        // 扣除积分
-        if (session?.user?.email !== 'test@example.com') {
-          deductCredits(costCredits)
-        }
+        if (session?.user?.email !== 'test@example.com') deductCredits(costCredits)
         
         const newItem: AudioItem = {
           id: Date.now().toString(),
@@ -133,7 +127,6 @@ export default function Home() {
   }
 
   const recharge = () => {
-    // 模拟充值：充1000积分
     if (!session?.user?.email) return
     const users = JSON.parse(localStorage.getItem('tts_users') || '[]')
     const userIndex = users.findIndex((u: any) => u.email === session.user?.email)
@@ -215,7 +208,7 @@ export default function Home() {
                 <span className={`${theme.textMuted2} text-sm`}>💰 积分: {isTestUser ? '无限' : credits}</span>
               </div>
               {!isTestUser && (
-                <button onClick={() => setShowRecharge(!showRecharge)} className={`px-3 py-2 rounded-lg text-sm ${darkMode ? 'bg-yellow-600 hover:bg-yellow-500' : 'bg-yellow-500 hover:bg-yellow-400'} text-white`}>
+                <button onClick={() => setShowRecharge(!showRecharge)} className="px-3 py-2 rounded-lg text-sm bg-yellow-500 hover:bg-yellow-400 text-white">
                   充值
                 </button>
               )}
@@ -250,7 +243,7 @@ export default function Home() {
                   <div className="text-xs text-gray-500 mt-1">¥7</div>
                 </button>
               </div>
-              <p className={`text-xs mt-4 ${theme.textMuted2}`}>* 1积分 = 1000字符，speech-2.6-hd 模型约 ¥0.7/千字符</p>
+              <p className={`text-xs mt-4 ${theme.textMuted2}`}>* 1积分 = 1000字符</p>
             </div>
           </div>
         )}
@@ -302,7 +295,7 @@ export default function Home() {
                   </button>
                 </div>
                 <div className={`mt-3 text-xs ${darkMode ? 'text-gray-500' : 'text-green-700/70'}`}>
-                  📊 计费: speech-2.6-hd = $0.1/千字符 (约¥0.7) | 1积分 = 1000字符
+                  📊 计费: 1积分 = 1000字符
                 </div>
               </>
             )}
@@ -383,7 +376,7 @@ export default function Home() {
             </div>
           </div>
         </div>
-     积分: {isTestUser ? '无限' : credits}</div>
+      </div>
     </div>
   )
 }
