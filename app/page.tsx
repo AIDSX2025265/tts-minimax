@@ -4,10 +4,10 @@ import { signIn, signOut, useSession } from 'next-auth/react'
 import { useState, useEffect } from 'react'
 
 const VOICES = [
+  { id: 'achuan_voice_003', name: '中性男声' },
   { id: 'yansangdage002', name: '烟嗓大哥' },
   { id: 'keainvsheng001', name: '可爱女声' },
   { id: 'nengliangnvzhu006', name: '能量女主' },
-  { id: 'achuan_voice_003', name: '中性男声' },
 ]
 
 const EMOTIONS = [
@@ -44,7 +44,7 @@ export default function Home() {
   const [emotion, setEmotion] = useState('')
   const [voice, setVoice] = useState('achuan_voice_003')
   const [speed, setSpeed] = useState(1)
-  const [darkMode, setDarkMode] = useState(true)
+  const [darkMode, setDarkMode] = useState(false)
   const [credits, setCredits] = useState(0)
 
   const charCount = text.length
@@ -143,21 +143,14 @@ export default function Home() {
     localStorage.setItem('savedAudios', JSON.stringify(newSaved))
   }
 
-  // 墨绿色主题
-  const theme = darkMode ? {
+  // 白瓷苹果风主题
+  const theme = {
     bg: 'from-slate-50 via-blue-50 to-slate-100',
     card: 'bg-white border-gray-200',
     text: 'text-gray-900',
     textSecondary: 'text-gray-500',
-    input: 'bg-black/30 border-gray-300 text-gray-900 placeholder-green-600/50',
-    button: 'from-blue-500 to-sky-500 hover:from-green-500 hover:to-emerald-600',
-  } : {
-    bg: 'from-green-50 via-emerald-50 to-green-100',
-    card: 'bg-white/80 border-blue-200',
-    text: 'text-gray-800',
-    textSecondary: 'text-gray-900',
-    input: 'bg-white border-green-300 text-gray-800 placeholder-green-500',
-    button: 'from-green-600 to-emerald-600 hover:from-green-500 hover:to-emerald-500',
+    input: 'bg-white border-gray-300 text-gray-900 placeholder-gray-400',
+    button: 'from-blue-500 to-sky-500 hover:from-blue-400 hover:to-sky-400',
   }
 
   const displayList = showSaved ? savedList : history
@@ -166,33 +159,33 @@ export default function Home() {
   if (session) {
     return (
       <div className={`min-h-screen bg-gradient-to-br ${theme.bg}`}>
-        <header className={`border-b ${darkMode ? 'border-green-800/50 bg-black/40' : 'border-blue-200 bg-white/80'} backdrop-blur-md`}>
+        <header className="border-b border-gray-200 bg-white/80 backdrop-blur-md">
           <div className="max-w-4xl mx-auto px-6 py-4 flex justify-between items-center">
             <div className="flex items-center gap-3">
               <div className={`w-10 h-10 bg-gradient-to-r ${theme.button} rounded-xl flex items-center justify-center shadow-lg`}>
-                <svg className="w-6 h-6 text-gray-900" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" />
                 </svg>
               </div>
               <span className={`text-xl font-bold ${theme.text}`}>大师兄的AI配音坊</span>
             </div>
             <div className="flex items-center gap-3">
-              <div className={`px-4 py-1.5 rounded-full ${darkMode ? 'bg-blue-50' : 'bg-gray-100'} border ${darkMode ? 'border-green-700/50' : 'border-green-300'}`}>
-                <span className={`text-sm ${darkMode ? 'text-gray-600' : 'text-gray-900'}`}>💰 {isTestUser ? '无限' : credits} 积分</span>
+              <div className={`px-4 py-1.5 rounded-full ${darkMode ? 'bg-gray-800' : 'bg-gray-100'} border ${darkMode ? 'border-gray-700' : 'border-gray-200'}`}>
+                <span className={`text-sm ${theme.textSecondary}`}>💰 {isTestUser ? '无限' : credits} 积分</span>
               </div>
-              <button onClick={() => setShowSaved(!showSaved)} className={`px-4 py-1.5 rounded-full text-sm ${showSaved ? `text-gray-900 bg-gradient-to-r ${theme.button}` : (darkMode ? 'bg-blue-50 text-gray-500' : 'bg-gray-100 text-gray-900')}`}>
+              <button onClick={() => setShowSaved(!showSaved)} className={`px-4 py-1.5 rounded-full text-sm ${showSaved ? `text-white bg-gradient-to-r ${theme.button}` : (darkMode ? 'bg-gray-800 text-white' : 'bg-gray-100 text-gray-700')}`}>
                 {showSaved ? '📋 历史' : `⭐ ${savedList.length}`}
               </button>
-              <button onClick={toggleDarkMode} className={`p-2 rounded-full ${darkMode ? 'bg-blue-50 text-gray-500' : 'bg-gray-100 text-gray-900'}`}>
+              <button onClick={toggleDarkMode} className={`p-2 rounded-full ${darkMode ? 'bg-gray-800 text-white' : 'bg-gray-100 text-gray-700'}`}>
                 {darkMode ? '☀️' : '🌙'}
               </button>
-              <div className={`w-8 h-8 rounded-full bg-gradient-to-r from-blue-500 to-sky-500 flex items-center justify-center text-gray-900 text-sm`}>
+              <div className={`w-8 h-8 rounded-full bg-gradient-to-r from-blue-500 to-sky-500 flex items-center justify-center text-white text-sm`}>
                 {session.user?.email?.charAt(0).toUpperCase()}
               </div>
-              <button onClick={() => signIn()} className={`px-3 py-1.5 rounded-full text-sm ${darkMode ? 'bg-blue-50 text-gray-500' : 'bg-gray-100 text-gray-900'}`}>
+              <button onClick={() => signIn()} className={`px-3 py-1.5 rounded-full text-sm ${darkMode ? 'bg-gray-800 text-white' : 'bg-gray-100 text-gray-700'}`}>
                 切换
               </button>
-              <button onClick={() => signOut()} className={`px-3 py-1.5 rounded-full text-sm ${darkMode ? 'bg-blue-50 text-gray-500' : 'bg-gray-100 text-gray-900'}`}>
+              <button onClick={() => signOut()} className={`px-3 py-1.5 rounded-full text-sm ${darkMode ? 'bg-gray-800 text-white' : 'bg-gray-100 text-gray-700'}`}>
                 退出
               </button>
             </div>
@@ -200,16 +193,13 @@ export default function Home() {
         </header>
 
         <main className="max-w-4xl mx-auto px-6 py-8">
-          <div className={`${theme.card} backdrop-blur-sm border rounded-2xl p-6 mb-6`}>
+          <div className={`${theme.card} border rounded-2xl p-6 mb-6`}>
             <h2 className={`text-sm font-medium ${theme.textSecondary} mb-4`}>声音设置</h2>
             <div className="grid grid-cols-3 gap-4">
               <div>
                 <label className={`block text-xs ${theme.textSecondary} mb-2`}>音色</label>
                 <select value={voice} onChange={(e) => setVoice(e.target.value)} className={`w-full p-3 ${theme.input} rounded-xl text-sm`}>
-                  <option value="achuan_voice_003">中性男声</option>
-                  <option value="yansangdage002">烟嗓大哥</option>
-                  <option value="keainvsheng001">可爱女声</option>
-                  <option value="nengliangnvzhu006">能量女主</option>
+                  {VOICES.map(v => (<option key={v.id} value={v.id}>{v.name}</option>))}
                 </select>
               </div>
               <div>
@@ -227,9 +217,9 @@ export default function Home() {
             </div>
           </div>
 
-          <div className={`${theme.card} backdrop-blur-sm border rounded-2xl p-6 mb-6`}>
+          <div className={`${theme.card} border rounded-2xl p-6 mb-6`}>
             <h2 className={`text-sm font-medium ${theme.textSecondary} mb-4 flex items-center gap-2`}>
-              <span className={`w-2 h-2 ${darkMode ? 'bg-green-500' : 'bg-green-600'} rounded-full animate-pulse`}></span>
+              <span className={`w-2 h-2 ${darkMode ? 'bg-blue-500' : 'bg-blue-500'} rounded-full animate-pulse`}></span>
               {showSaved ? '已保存的音频' : '生成语音'}
             </h2>
             {!showSaved && (
@@ -237,24 +227,24 @@ export default function Home() {
                 <textarea value={text} onChange={(e) => setText(e.target.value)} placeholder="输入要转换的文字..." className={`w-full h-40 p-4 ${theme.input} rounded-xl text-sm resize-none`} />
                 <div className="flex justify-between items-center mt-4">
                   <div className="flex items-center gap-4">
-                    <span className={`text-sm ${darkMode ? 'text-gray-700' : 'text-gray-800'}`}>{charCount} 字符</span>
+                    <span className={`text-sm ${theme.textSecondary}`}>{charCount} 字符</span>
                     {charCount > 0 && (
-                      <span className={`text-sm ${darkMode ? 'text-gray-600' : 'text-gray-800'}`}>💰 {costCredits} 积分 (100积分=10000字符)</span>
+                      <span className={`text-sm ${theme.textSecondary}`}>💰 {costCredits} 积分 (100积分=10000字符)</span>
                     )}
                   </div>
-                  <button onClick={generateAudio} disabled={loading || !text.trim()} className={`px-8 py-3 bg-gradient-to-r ${theme.button} text-gray-900 rounded-xl text-sm font-medium disabled:opacity-50`}>
+                  <button onClick={generateAudio} disabled={loading || !text.trim()} className={`px-8 py-3 bg-gradient-to-r ${theme.button} text-white rounded-xl text-sm font-medium disabled:opacity-50`}>
                     {loading ? '生成中...' : '✨ 生成音频'}
                   </button>
                 </div>
               </>
             )}
             {audioUrl && !showSaved && (
-              <div className={`mt-6 p-4 ${darkMode ? 'bg-gray-50' : 'bg-green-50'} rounded-xl`}>
+              <div className={`mt-6 p-4 ${darkMode ? 'bg-gray-800' : 'bg-gray-50'} rounded-xl`}>
                 <div className="flex items-center justify-between mb-3">
                   <span className={`text-sm ${theme.textSecondary}`}>最新生成</span>
                   <div className="flex gap-3">
-                    <button onClick={() => saveAudio({id: Date.now().toString(), text, url: audioUrl, time: new Date().toISOString()})} className={`text-sm ${darkMode ? 'text-gray-600' : 'text-gray-800'}`}>⭐ 保存</button>
-                    <a href={audioUrl} download="audio.mp3" className={`text-sm ${darkMode ? 'text-gray-600' : 'text-gray-800'}`}>📥 下载</a>
+                    <button onClick={() => saveAudio({id: Date.now().toString(), text, url: audioUrl, time: new Date().toISOString()})} className={`text-sm text-blue-500`}>⭐ 保存</button>
+                    <a href={audioUrl} download="audio.mp3" className={`text-sm text-blue-500`}>📥 下载</a>
                   </div>
                 </div>
                 <audio controls src={audioUrl} className="w-full h-10" />
@@ -263,21 +253,21 @@ export default function Home() {
           </div>
 
           {displayList.length > 0 && (
-            <div className={`${theme.card} backdrop-blur-sm border rounded-2xl p-6`}>
+            <div className={`${theme.card} border rounded-2xl p-6`}>
               <h3 className={`text-sm font-medium ${theme.textSecondary} mb-4`}>{showSaved ? '已保存' : '历史记录'}</h3>
               <div className="space-y-3 max-h-80 overflow-y-auto">
                 {displayList.map((item) => (
-                  <div key={item.id} className={`flex items-center gap-4 p-4 rounded-xl ${darkMode ? 'bg-gray-50' : 'bg-green-50'}`}>
+                  <div key={item.id} className={`flex items-center gap-4 p-4 rounded-xl ${darkMode ? 'bg-gray-800' : 'bg-gray-50'}`}>
                     <div className="flex-1 min-w-0">
                       <p className={`text-sm ${theme.text} truncate`}>{item.text}</p>
-                      <p className={`text-xs ${darkMode ? 'text-gray-800' : 'text-gray-700'}`}>{new Date(item.time).toLocaleString()}</p>
+                      <p className={`text-xs ${theme.textSecondary}`}>{new Date(item.time).toLocaleString()}</p>
                     </div>
                     <div className="flex gap-2">
                       {showSaved && (
-                        <button onClick={() => deleteSaved(item.id)} className={`p-2 ${darkMode ? 'text-gray-800' : 'text-gray-700'}`}>🗑️</button>
+                        <button onClick={() => deleteSaved(item.id)} className={`p-2 ${theme.textSecondary}`}>🗑️</button>
                       )}
                       {!item.saved && !showSaved && (
-                        <button onClick={() => saveAudio(item)} className={`p-2 ${darkMode ? 'text-gray-600' : 'text-gray-800'}`}>⭐</button>
+                        <button onClick={() => saveAudio(item)} className={`p-2 text-blue-500`}>⭐</button>
                       )}
                       <audio controls src={item.url} className="h-8 w-36" />
                     </div>
@@ -296,16 +286,16 @@ export default function Home() {
       <div className="max-w-sm w-full">
         <div className="text-center mb-8">
           <div className={`w-20 h-20 bg-gradient-to-r ${theme.button} rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-2xl`}>
-            <svg className="w-10 h-10 text-gray-900" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" /></svg>
+            <svg className="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" /></svg>
           </div>
           <h1 className={`text-2xl font-bold ${theme.text}`}>大师兄的AI配音坊</h1>
           <p className={theme.textSecondary}>极速调用你的克隆声音</p>
         </div>
-        <div className={`${theme.card} backdrop-blur-sm border rounded-2xl p-8 shadow-xl`}>
-          <button onClick={() => signIn()} className={`w-full py-4 bg-gradient-to-r ${theme.button} text-gray-900 rounded-xl font-medium`}>
+        <div className={`${theme.card} border rounded-2xl p-8 shadow-xl`}>
+          <button onClick={() => signIn()} className={`w-full py-4 bg-gradient-to-r ${theme.button} text-white rounded-xl font-medium`}>
             立即体验
           </button>
-          <div className={`mt-6 pt-6 border-t ${darkMode ? 'border-gray-200' : 'border-blue-200'}`}>
+          <div className={`mt-6 pt-6 border-t ${darkMode ? 'border-gray-700' : 'border-gray-200'}`}>
             <div className="grid grid-cols-3 gap-4 text-center">
               <div><div className="text-2xl mb-1">🎤</div><p className={`${theme.textSecondary} text-xs`}>真人音色</p></div>
               <div><div className="text-2xl mb-1">⚡</div><p className={`${theme.textSecondary} text-xs`}>极速生成</p></div>
