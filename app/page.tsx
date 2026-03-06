@@ -7,7 +7,6 @@ const VOICES = [
   { id: 'keainvsheng001', name: '可爱女声' },
   { id: 'nengliangnvzhu006', name: '能量女主' },
   { id: 'yansangdage002', name: '烟嗓大哥' },
-  { id: 'achuan_voice_003', name: '中性男声' },
 ]
 
 const EMOTIONS = [
