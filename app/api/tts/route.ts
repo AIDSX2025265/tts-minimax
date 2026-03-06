@@ -11,25 +11,31 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: 'Invalid JSON' }, { status: 400 })
   }
 
-  const { text } = body
+  const { text, voice, emotion, speed } = body
   if (!text) {
     return NextResponse.json({ error: '请输入文字' }, { status: 400 })
   }
 
-  // 直接写死配置，不需要环境变量
   const apiKey = 'sk-api-RSMASEzZAkfj43fn24VlWIi9s28UBbiNjacQv3eZiaBbqYFdOqRucrRhuN8-AwfIC4HT8sFrxwzYfgvTzA-sgNE9FiziHkviKXtk39jTU88ulXifCMTvCXM'
   const groupId = '1810540818335809757'
-  const voiceId = 'achuan_voice_003'
+  const voiceId = voice || 'achuan_voice_003'
+
+  const voiceSetting: any = {
+    voice_id: voiceId,
+    speed: speed || 1,
+    pitch: 0,
+    vol: 1
+  }
+  
+  // 添加情感参数
+  if (emotion) {
+    voiceSetting.emotion = emotion
+  }
 
   const payload = {
     model: 'speech-2.6-hd',
     text: String(text).slice(0, 1000),
-    voice_setting: {
-      voice_id: voiceId,
-      speed: 1,
-      pitch: 0,
-      vol: 1
-    },
+    voice_setting: voiceSetting,
     audio_setting: {
       sample_rate: 44100,
       bitrate: 128000,
