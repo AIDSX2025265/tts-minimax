@@ -78,21 +78,21 @@ export default function Admin() {
 
   if (!isAdmin) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-950 to-slate-900 flex items-center justify-center p-6">
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-slate-100 flex items-center justify-center p-6">
         <div className="max-w-md w-full">
-          <div className="bg-slate-800/50 border border-blue-800/30 rounded-2xl p-8">
+          <div className="bg-white border border-gray-200 rounded-2xl p-8">
             <h1 className="text-2xl font-bold text-white text-center mb-6">管理员登录</h1>
             <input
               type="password"
               placeholder="管理员密码"
               value={adminPassword}
               onChange={(e) => setAdminPassword(e.target.value)}
-              className="w-full p-4 bg-slate-800/50 border border-blue-500/30 rounded-xl text-white placeholder-green-600/50 focus:outline-none focus:border-green-500 mb-4"
+              className="w-full p-4 bg-white border border-gray-300 rounded-xl text-white placeholder-green-600/50 focus:outline-none focus:border-green-500 mb-4"
             />
-            <button onClick={login} className="w-full py-4 bg-gradient-to-r from-blue-600 to-cyan-600 text-white rounded-xl font-medium">
+            <button onClick={login} className="w-full py-4 bg-gradient-to-r from-blue-500 to-sky-500 text-white rounded-xl font-medium">
               登录
             </button>
-            <p className="text-blue-500 text-xs text-center mt-4">默认密码: admin123</p>
+            <p className="text-gray-700 text-xs text-center mt-4">默认密码: admin123</p>
           </div>
         </div>
       </div>
@@ -100,7 +100,7 @@ export default function Admin() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-950 to-slate-900 p-6">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-slate-100 p-6">
       <div className="max-w-6xl mx-auto">
         <div className="flex justify-between items-center mb-8">
           <h1 className="text-3xl font-bold text-white">管理后台</h1>
@@ -111,7 +111,7 @@ export default function Admin() {
         </div>
 
         {showWechat && (
-          <div className="mb-8 p-6 bg-slate-800/50 border border-blue-800/30 rounded-2xl">
+          <div className="mb-8 p-6 bg-white border border-gray-200 rounded-2xl">
             <h2 className="text-xl font-bold text-white mb-4">微信收款码</h2>
             <div className="p-4 bg-white rounded-lg inline-block"><p className="text-gray-800">请添加微信</p></div>
           </div>
@@ -124,24 +124,24 @@ export default function Admin() {
 
         {tab === 'users' && (
           <div className="space-y-6">
-            <div className="p-6 bg-slate-800/50 border border-blue-800/30 rounded-2xl">
+            <div className="p-6 bg-white border border-gray-200 rounded-2xl">
               <h2 className="text-xl font-bold text-white mb-4">手动充值</h2>
               <div className="flex gap-4">
-                <input type="email" placeholder="用户邮箱" value={targetEmail} onChange={(e) => setTargetEmail(e.target.value)} className="flex-1 p-3 bg-slate-800/50 border border-blue-500/30 rounded-xl text-white" />
-                <input type="number" placeholder="积分" value={rechargeAmount} onChange={(e) => setRechargeAmount(Number(e.target.value))} className="w-32 p-3 bg-slate-800/50 border border-blue-500/30 rounded-xl text-white" />
+                <input type="email" placeholder="用户邮箱" value={targetEmail} onChange={(e) => setTargetEmail(e.target.value)} className="flex-1 p-3 bg-white border border-gray-300 rounded-xl text-white" />
+                <input type="number" placeholder="积分" value={rechargeAmount} onChange={(e) => setRechargeAmount(Number(e.target.value))} className="w-32 p-3 bg-white border border-gray-300 rounded-xl text-white" />
                 <button onClick={rechargeUser} className="px-6 py-3 bg-green-600 text-white rounded-xl">充值</button>
               </div>
             </div>
-            <div className="bg-slate-800/50 border border-blue-800/30 rounded-2xl overflow-hidden">
+            <div className="bg-white border border-gray-200 rounded-2xl overflow-hidden">
               <table className="w-full">
                 <thead className="bg-blue-900/50">
                   <tr><th className="p-4 text-left text-white">邮箱</th><th className="p-4 text-left text-white">积分</th><th className="p-4 text-left text-white">操作</th></tr>
                 </thead>
                 <tbody>
                   {users.map((user, i) => (
-                    <tr key={i} className="border-t border-blue-800/30">
+                    <tr key={i} className="border-t border-gray-200">
                       <td className="p-4 text-white">{user.email}</td>
-                      <td className="p-4 text-blue-400">{user.credits}</td>
+                      <td className="p-4 text-gray-600">{user.credits}</td>
                       <td className="p-4"><button onClick={() => deleteUser(user.email)} className="text-red-400">删除</button></td>
                     </tr>
                   ))}
@@ -153,24 +153,24 @@ export default function Admin() {
 
         {tab === 'codes' && (
           <div className="space-y-6">
-            <div className="p-6 bg-slate-800/50 border border-blue-800/30 rounded-2xl">
+            <div className="p-6 bg-white border border-gray-200 rounded-2xl">
               <h2 className="text-xl font-bold text-white mb-4">生成兑换码</h2>
               <div className="flex gap-4">
-                <input type="number" placeholder="数量" value={newCodeCount} onChange={(e) => setNewCodeCount(Number(e.target.value))} className="w-32 p-3 bg-slate-800/50 border border-blue-500/30 rounded-xl text-white" />
+                <input type="number" placeholder="数量" value={newCodeCount} onChange={(e) => setNewCodeCount(Number(e.target.value))} className="w-32 p-3 bg-white border border-gray-300 rounded-xl text-white" />
                 <button onClick={generateCodes} className="px-6 py-3 bg-green-600 text-white rounded-xl">生成 (每个10000积分)</button>
               </div>
             </div>
-            <div className="bg-slate-800/50 border border-blue-800/30 rounded-2xl overflow-hidden">
+            <div className="bg-white border border-gray-200 rounded-2xl overflow-hidden">
               <table className="w-full">
                 <thead className="bg-blue-900/50">
                   <tr><th className="p-4 text-left text-white">兑换码</th><th className="p-4 text-left text-white">积分</th><th className="p-4 text-left text-white">状态</th><th className="p-4 text-left text-white">使用人</th></tr>
                 </thead>
                 <tbody>
                   {codes.map((code, i) => (
-                    <tr key={i} className="border-t border-blue-800/30">
-                      <td className="p-4 text-blue-400 font-mono">{code.code}</td>
+                    <tr key={i} className="border-t border-gray-200">
+                      <td className="p-4 text-gray-600 font-mono">{code.code}</td>
                       <td className="p-4 text-white">{code.credits}</td>
-                      <td className="p-4"><span className={code.used ? 'text-red-400' : 'text-blue-400'}>{code.used ? '已使用' : '未使用'}</span></td>
+                      <td className="p-4"><span className={code.used ? 'text-red-400' : 'text-gray-600'}>{code.used ? '已使用' : '未使用'}</span></td>
                       <td className="p-4 text-gray-400">{code.usedBy || '-'}</td>
                     </tr>
                   ))}

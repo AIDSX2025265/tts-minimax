@@ -40,27 +40,27 @@ export default function Redeem() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-950 to-slate-900 flex items-center justify-center p-6">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-slate-100 flex items-center justify-center p-6">
       <div className="max-w-md w-full">
-        <div className="bg-slate-800/50 border border-blue-800/30 rounded-2xl p-8">
+        <div className="bg-white border border-gray-200 rounded-2xl p-8">
           <h1 className="text-2xl font-bold text-white text-center mb-2">兑换积分</h1>
-          <p className="text-blue-400 text-center mb-6">输入兑换码兑换积分</p>
+          <p className="text-gray-600 text-center mb-6">输入兑换码兑换积分</p>
           
-          <input type="text" placeholder="请输入兑换码" value={code} onChange={(e) => setCode(e.target.value.toUpperCase())} className="w-full p-4 bg-slate-800/50 border border-blue-500/30 rounded-xl text-white placeholder-green-600/50 focus:outline-none focus:border-green-500 mb-4 text-center text-lg font-mono" />
+          <input type="text" placeholder="请输入兑换码" value={code} onChange={(e) => setCode(e.target.value.toUpperCase())} className="w-full p-4 bg-white border border-gray-300 rounded-xl text-white placeholder-green-600/50 focus:outline-none focus:border-green-500 mb-4 text-center text-lg font-mono" />
 
-          <button onClick={redeem} disabled={loading || !session} className="w-full py-4 bg-gradient-to-r from-blue-600 to-cyan-600 text-white rounded-xl font-medium disabled:opacity-50">
+          <button onClick={redeem} disabled={loading || !session} className="w-full py-4 bg-gradient-to-r from-blue-500 to-sky-500 text-white rounded-xl font-medium disabled:opacity-50">
             {loading ? '兑换中...' : '立即兑换'}
           </button>
 
           {result.message && (
-            <div className={`mt-4 p-4 rounded-xl text-center ${result.success ? 'bg-green-600/20 border border-green-500 text-blue-400' : 'bg-red-600/20 border border-red-500 text-red-400'}`}>
+            <div className={`mt-4 p-4 rounded-xl text-center ${result.success ? 'bg-green-600/20 border border-green-500 text-gray-600' : 'bg-red-600/20 border border-red-500 text-red-400'}`}>
               {result.message}
             </div>
           )}
 
           {!session && <p className="text-yellow-400 text-center mt-4 text-sm">请先登录后再兑换</p>}
 
-          <button onClick={() => router.push('/')} className="w-full mt-4 py-3 text-green-500 hover:text-blue-400">返回首页</button>
+          <button onClick={() => router.push('/')} className="w-full mt-4 py-3 text-green-500 hover:text-gray-600">返回首页</button>
         </div>
       </div>
     </div>
