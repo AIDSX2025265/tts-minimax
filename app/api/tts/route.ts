@@ -1,6 +1,14 @@
 import { NextResponse } from 'next/server'
+import { getToken } from 'next-auth/jwt'
 
 export async function POST(req: Request) {
+  // 检查登录状态
+  const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET || 'dev-secret-change-in-prod' })
+  
+  if (!token) {
+    return NextResponse.json({ error: '请先登录' }, { status: 401 })
+  }
+
   const { text } = await req.json()
 
   if (!text) {
@@ -36,8 +44,6 @@ export async function POST(req: Request) {
 
     const data = await response.json()
 
-    console.log('MiniMax response:', JSON.stringify(data).substring(0, 200))
-
     if (data.base_resp?.status_code !== 0) {
       return NextResponse.json({ error: data.base_resp?.status_msg || 'TTS error', details: data }, { status: 500 })
     }
@@ -54,11 +60,10 @@ export async function POST(req: Request) {
 
     return NextResponse.json({
       audio_url: audioUrl,
-      duration: data.data?.audio_size,
       success: true
     })
   } catch (error) {
     console.error('TTS error:', error)
-    return NextResponse.json({ error: 'Internal error', details: String(error) }, { status: 500 })
+    return NextResponse.json({ error: String(error) }, { status: 500 })
   }
 }
