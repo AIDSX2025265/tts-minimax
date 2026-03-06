@@ -3,15 +3,6 @@
 import { signIn, signOut, useSession } from 'next-auth/react'
 import { useState } from 'react'
 
-const VOICES = [
-  { id: 'achuan_voice_003', name: '克隆声音' },
-  { id: 'male-qn-qingse', name: '青涩青年' },
-  { id: 'male-qn-jingying', name: '精英青年' },
-  { id: 'male-qn-badao', name: '霸道总裁' },
-  { id: 'female-shaonv', name: '活泼少女' },
-  { id: 'female-yujie', name: '温柔御姐' },
-]
-
 const EMOTIONS = [
   { id: '', name: '标准' },
   { id: 'happy', name: '开心' },
@@ -32,8 +23,7 @@ export default function Home() {
   const [text, setText] = useState('')
   const [audioUrl, setAudioUrl] = useState('')
   const [loading, setLoading] = useState(false)
-  const [history, setHistory] = useState<{text: string, url: string, time: string, voice: string}[]>([])
-  const [voice, setVoice] = useState('achuan_voice_003')
+  const [history, setHistory] = useState<{text: string, url: string, time: string}[]>([])
   const [emotion, setEmotion] = useState('')
   const [speed, setSpeed] = useState(1)
 
@@ -44,13 +34,12 @@ export default function Home() {
       const res = await fetch('/api/tts', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ text, voice, emotion, speed })
+        body: JSON.stringify({ text, emotion, speed })
       })
       const data = await res.json()
       if (data.audio_url) {
         setAudioUrl(data.audio_url)
-        const voiceName = VOICES.find(v => v.id === voice)?.name || voice
-        setHistory([{text, url: data.audio_url, time: new Date().toLocaleTimeString(), voice: voiceName}, ...history])
+        setHistory([{text, url: data.audio_url, time: new Date().toLocaleTimeString()}, ...history])
       } else {
         alert(data.error || '生成失败')
       }
@@ -96,13 +85,7 @@ export default function Home() {
               </svg>
               声音设置
             </h2>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div>
-                <label className="block text-green-600 text-sm mb-2">音色</label>
-                <select value={voice} onChange={(e) => setVoice(e.target.value)} className="w-full p-3 bg-green-50 border border-green-200 rounded-xl text-green-800 focus:outline-none focus:border-green-400">
-                  {VOICES.map(v => (<option key={v.id} value={v.id} className="bg-white">{v.name}</option>))}
-                </select>
-              </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <label className="block text-green-600 text-sm mb-2">情感</label>
                 <select value={emotion} onChange={(e) => setEmotion(e.target.value)} className="w-full p-3 bg-green-50 border border-green-200 rounded-xl text-green-800 focus:outline-none focus:border-green-400">
@@ -153,7 +136,7 @@ export default function Home() {
                 {history.map((item, i) => (
                   <div key={i} className="flex items-center gap-4 p-3 bg-green-50 rounded-xl hover:bg-green-100 transition cursor-pointer" onClick={() => setAudioUrl(item.url)}>
                     <div className="w-10 h-10 bg-green-200 rounded-lg flex items-center justify-center"><svg className="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3" /></svg></div>
-                    <div className="flex-1 min-w-0"><p className="text-green-800 text-sm truncate">{item.text}</p><p className="text-green-500 text-xs">{item.time} · {item.voice}</p></div>
+                    <div className="flex-1 min-w-0"><p className="text-green-800 text-sm truncate">{item.text}</p><p className="text-green-500 text-xs">{item.time}</p></div>
                     <audio controls src={item.url} className="h-8 w-32" onClick={(e) => e.stopPropagation()} />
                   </div>
                 ))}
