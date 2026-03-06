@@ -1,13 +1,6 @@
-import { getServerSession } from 'next-auth'
 import { NextResponse } from 'next/server'
 
 export async function POST(req: Request) {
-  const session = await getServerSession()
-  
-  if (!session) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-  }
-
   const { text } = await req.json()
 
   if (!text) {
@@ -43,23 +36,26 @@ export async function POST(req: Request) {
 
     const data = await response.json()
 
+    console.log('MiniMax response:', JSON.stringify(data).substring(0, 200))
+
     if (data.base_resp?.status_code !== 0) {
       return NextResponse.json({ error: data.base_resp?.status_msg || 'TTS error', details: data }, { status: 500 })
     }
 
-    // MiniMax 返回的是 hex 格式，需要转换为 base64
     const audioHex = data.data?.audio
     if (!audioHex) {
       return NextResponse.json({ error: 'No audio returned', details: data }, { status: 500 })
     }
 
+    // hex 转 base64
     const audioBuffer = Buffer.from(audioHex, 'hex')
     const audioBase64 = audioBuffer.toString('base64')
     const audioUrl = `data:audio/mp3;base64,${audioBase64}`
 
     return NextResponse.json({
       audio_url: audioUrl,
-      duration: data.data?.audio_size
+      duration: data.data?.audio_size,
+      success: true
     })
   } catch (error) {
     console.error('TTS error:', error)
