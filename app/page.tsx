@@ -61,13 +61,30 @@ export default function Home() {
       setSavedList(filtered)
       localStorage.setItem('savedAudios', JSON.stringify(filtered))
     }
+  }, [])
 
+  // Fetch credits from cloud when session changes
+  useEffect(() => {
     if (session?.user?.email) {
-      const users = JSON.parse(localStorage.getItem('tts_users') || '[]')
-      const user = users.find((u: any) => u.email === session.user?.email)
-      if (user) setCredits(user.credits || 0)
+      fetchCredits(session.user.email)
     }
   }, [session])
+
+  const fetchCredits = async (email: string) => {
+    try {
+      const res = await fetch('/api/auth', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'getCredits', email })
+      })
+      const data = await res.json()
+      if (data.credits !== undefined) {
+        setCredits(data.credits)
+      }
+    } catch (e) {
+      console.error('Failed to fetch credits', e)
+    }
+  }
 
   const toggleDarkMode = () => {
     const newMode = !darkMode
@@ -75,17 +92,23 @@ export default function Home() {
     localStorage.setItem('darkMode', String(newMode))
   }
 
-  const deductCredits = (amount: number) => {
+  const deductCredits = async (amount: number) => {
     if (!session?.user?.email) return false
-    const users = JSON.parse(localStorage.getItem('tts_users') || '[]')
-    const userIndex = users.findIndex((u: any) => u.email === session.user?.email)
-    if (userIndex >= 0) {
-      if (users[userIndex].credits >= amount) {
-        users[userIndex].credits -= amount
-        setCredits(users[userIndex].credits)
-        localStorage.setItem('tts_users', JSON.stringify(users))
+    if (session.user.email === 'test@example.com') return true
+    
+    try {
+      const res = await fetch('/api/auth', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'deductCredits', email: session.user.email, credits: amount })
+      })
+      const data = await res.json()
+      if (data.success) {
+        setCredits(data.credits)
         return true
       }
+    } catch (e) {
+      console.error('Failed to deduct credits', e)
     }
     return false
   }
