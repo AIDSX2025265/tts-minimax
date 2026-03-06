@@ -18,10 +18,9 @@ const SPEEDS = [
   { id: 1.5, name: '1.5x 极速' },
 ]
 
-// MiniMax TTS 计费：speech-2.6-hd = $100/百万字符
-const PRICE_PER_CHAR = 0.0001 / 1000 // $0.0001 per 1000 chars = $0.1 per 1000 chars
-const PRICE_PER_1K = 0.01 // 1000字符约0.01美元
-const CNY_RATE = 7 // 1美元 ≈ 7元
+const PRICE_PER_1K = 0.01 // 1000字符 = $0.01
+const CNY_RATE = 7
+const CHARS_PER_CREDIT = 1000 // 1积分 = 1000字符
 
 interface AudioItem {
   id: string
@@ -42,10 +41,12 @@ export default function Home() {
   const [emotion, setEmotion] = useState('')
   const [speed, setSpeed] = useState(1)
   const [darkMode, setDarkMode] = useState(false)
+  const [credits, setCredits] = useState(0)
+  const [showRecharge, setShowRecharge] = useState(false)
 
   const charCount = text.length
-  const costUSD = (charCount / 1000) * PRICE_PER_1K
-  const costCNY = costUSD * CNY_RATE
+  const costCredits = Math.ceil(charCount / CHARS_PER_CREDIT)
+  const costCNY = (charCount / 1000) * PRICE_PER_1K * CNY_RATE
 
   useEffect(() => {
     const saved = localStorage.getItem('darkMode')
@@ -59,7 +60,16 @@ export default function Home() {
       setSavedList(filtered)
       localStorage.setItem('savedAudios', JSON.stringify(filtered))
     }
-  }, [])
+
+    // 加载用户积分
+    if (session?.user?.email) {
+      const users = JSON.parse(localStorage.getItem('tts_users') || '[]')
+      const user = users.find((u: any) => u.email === session.user?.email)
+      if (user) {
+        setCredits(user.credits || 0)
+      }
+    }
+  }, [session])
 
   const toggleDarkMode = () => {
     const newMode = !darkMode
@@ -67,8 +77,29 @@ export default function Home() {
     localStorage.setItem('darkMode', String(newMode))
   }
 
+  const deductCredits = (amount: number) => {
+    if (!session?.user?.email) return false
+    const users = JSON.parse(localStorage.getItem('tts_users') || '[]')
+    const userIndex = users.findIndex((u: any) => u.email === session.user?.email)
+    if (userIndex >= 0) {
+      if (users[userIndex].credits >= amount) {
+        users[userIndex].credits -= amount
+        setCredits(users[userIndex].credits)
+        localStorage.setItem('tts_users', JSON.stringify(users))
+        return true
+      }
+    }
+    return false
+  }
+
   const generateAudio = async () => {
     if (!text.trim()) return
+    if (costCredits > credits && session?.user?.email !== 'test@example.com') {
+      alert('积分不足！请先充值积分')
+      setShowRecharge(true)
+      return
+    }
+    
     setLoading(true)
     try {
       const res = await fetch('/api/tts', {
@@ -78,6 +109,11 @@ export default function Home() {
       })
       const data = await res.json()
       if (data.audio_url) {
+        // 扣除积分
+        if (session?.user?.email !== 'test@example.com') {
+          deductCredits(costCredits)
+        }
+        
         const newItem: AudioItem = {
           id: Date.now().toString(),
           text,
@@ -94,6 +130,19 @@ export default function Home() {
       alert('生成失败')
     }
     setLoading(false)
+  }
+
+  const recharge = () => {
+    // 模拟充值：充1000积分
+    if (!session?.user?.email) return
+    const users = JSON.parse(localStorage.getItem('tts_users') || '[]')
+    const userIndex = users.findIndex((u: any) => u.email === session.user?.email)
+    if (userIndex >= 0) {
+      users[userIndex].credits = (users[userIndex].credits || 0) + 1000
+      setCredits(users[userIndex].credits)
+      localStorage.setItem('tts_users', JSON.stringify(users))
+      alert('充值成功！+1000积分')
+    }
   }
 
   const saveAudio = (item: AudioItem) => {
@@ -118,7 +167,7 @@ export default function Home() {
     text: 'text-white',
     textMuted: 'text-gray-300',
     textMuted2: 'text-gray-400',
-    input: 'bg-gray-900/50 border-white placeholder-gray--gray-600 text500',
+    input: 'bg-gray-900/50 border-gray-600 text-white placeholder-gray-500',
     select: 'bg-gray-900/50 border-gray-600 text-white',
     selectOption: 'bg-gray-800',
     header: 'border-gray-700 bg-gray-900/80',
@@ -146,6 +195,7 @@ export default function Home() {
 
   const IconBg = darkMode ? 'from-gray-600 to-gray-700' : 'from-green-600 to-emerald-700'
   const displayList = showSaved ? savedList : history
+  const isTestUser = session?.user?.email === 'test@example.com'
 
   if (session) {
     return (
@@ -160,9 +210,17 @@ export default function Home() {
               </div>
               <span className={`text-xl font-bold ${theme.text}`}>MiniMax TTS</span>
             </div>
-            <div className="flex items-center gap-4">
-              <button onClick={() => setShowSaved(!showSaved)} className={`px-4 py-2 rounded-lg text-sm transition ${showSaved ? theme.buttonBg + ' text-white' : 'bg-green-900/50 text-green-300 hover:bg-green-800/50'}`}>
-                {showSaved ? '📋 历史记录' : '⭐ 已保存 (' + savedList.length + ')'}
+            <div className="flex items-center gap-3">
+              <div className={`px-4 py-2 rounded-xl ${darkMode ? 'bg-gray-700' : 'bg-green-900/50'} border ${darkMode ? 'border-gray-600' : 'border-green-700/50'}`}>
+                <span className={`${theme.textMuted2} text-sm`}>💰 积分: {isTestUser ? '无限' : credits}</span>
+              </div>
+              {!isTestUser && (
+                <button onClick={() => setShowRecharge(!showRecharge)} className={`px-3 py-2 rounded-lg text-sm ${darkMode ? 'bg-yellow-600 hover:bg-yellow-500' : 'bg-yellow-500 hover:bg-yellow-400'} text-white`}>
+                  充值
+                </button>
+              )}
+              <button onClick={() => setShowSaved(!showSaved)} className={`px-3 py-2 rounded-lg text-sm transition ${showSaved ? theme.buttonBg + ' text-white' : (darkMode ? 'bg-gray-700 text-gray-300' : 'bg-green-900/50 text-green-300')}`}>
+                {showSaved ? '📋 历史' : `⭐ 保存 (${savedList.length})`}
               </button>
               <button onClick={toggleDarkMode} className={`p-2 rounded-lg transition ${darkMode ? 'bg-gray-700 hover:bg-gray-600 text-gray-300' : 'bg-green-900/50 text-green-300 hover:bg-green-800/50'}`}>
                 {darkMode ? (
@@ -171,18 +229,31 @@ export default function Home() {
                   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" /></svg>
                 )}
               </button>
-              <div className="flex items-center gap-2 text-gray-300">
-                <div className={`w-8 h-8 rounded-full flex items-center justify-center text-white text-sm ${theme.avatar}`}>
-                  {session.user?.email?.charAt(0).toUpperCase()}
-                </div>
-                <span className={`text-sm hidden sm:inline ${theme.text}`}>{session.user?.email}</span>
+              <div className={`w-8 h-8 rounded-full flex items-center justify-center text-white text-sm ${theme.avatar}`}>
+                {session.user?.email?.charAt(0).toUpperCase()}
               </div>
-              <button onClick={() => signOut()} className={`px-4 py-2 rounded-lg text-sm transition ${darkMode ? 'bg-gray-700 hover:bg-gray-600 text-gray-300 border border-gray-600' : 'bg-green-900/50 hover:bg-green-800/50 text-green-300 border border-green-700/50'}`}>
+              <button onClick={() => signOut()} className={`px-3 py-2 rounded-lg text-sm ${darkMode ? 'bg-gray-700 hover:bg-gray-600 text-gray-300' : 'bg-green-900/50 hover:bg-green-800/50 text-green-300'}`}>
                 退出
               </button>
             </div>
           </div>
         </header>
+
+        {showRecharge && !isTestUser && (
+          <div className="max-w-4xl mx-auto px-6 py-4">
+            <div className={`${theme.card} border rounded-xl p-6`}>
+              <h3 className={`text-lg font-bold ${theme.text} mb-4`}>💳 充值积分</h3>
+              <div className="grid grid-cols-3 gap-4">
+                <button onClick={recharge} className={`p-4 rounded-xl border ${darkMode ? 'border-gray-600 hover:bg-gray-700' : 'border-green-700 hover:bg-green-900/30'} ${theme.text} transition`}>
+                  <div className="text-2xl font-bold mb-1">1000</div>
+                  <div className="text-sm text-green-400">积分</div>
+                  <div className="text-xs text-gray-500 mt-1">¥7</div>
+                </button>
+              </div>
+              <p className={`text-xs mt-4 ${theme.textMuted2}`}>* 1积分 = 1000字符，speech-2.6-hd 模型约 ¥0.7/千字符</p>
+            </div>
+          </div>
+        )}
 
         <main className="max-w-4xl mx-auto px-6 py-8">
           <div className={`${theme.card} backdrop-blur-sm border rounded-2xl p-6 mb-8`}>
@@ -222,7 +293,7 @@ export default function Home() {
                     <span className={`${darkMode ? 'text-gray-500' : 'text-green-600'} text-sm`}>{charCount} / 1000 字符</span>
                     {charCount > 0 && (
                       <span className={`${darkMode ? 'text-gray-500' : 'text-green-600'} text-sm`}>
-                        💰 预计消耗: ${costUSD.toFixed(4)} ≈ ¥{costCNY.toFixed(2)}
+                        💰 消耗: {costCredits}积分 ≈ ¥{costCNY.toFixed(2)}
                       </span>
                     )}
                   </div>
@@ -231,7 +302,7 @@ export default function Home() {
                   </button>
                 </div>
                 <div className={`mt-3 text-xs ${darkMode ? 'text-gray-500' : 'text-green-700/70'}`}>
-                  📊 计费说明: speech-2.6-hd = $0.1/千字符 (约¥0.7)
+                  📊 计费: speech-2.6-hd = $0.1/千字符 (约¥0.7) | 1积分 = 1000字符
                 </div>
               </>
             )}
@@ -308,11 +379,11 @@ export default function Home() {
             <div className="grid grid-cols-3 gap-4 text-center">
               <div><div className="text-2xl mb-1">🎙️</div><p className={darkMode ? 'text-gray-500' : 'text-green-500'} text-xs>克隆声音</p></div>
               <div><div className="text-2xl mb-1">⚡</div><p className={darkMode ? 'text-gray-500' : 'text-green-500'} text-xs>极速生成</p></div>
-              <div><div className="text-2xl mb-1">🔊</div><p className={darkMode ? 'text-gray-500' : 'text-green-500'} text-xs>高清音质</p></div>
+              <div><div className="text-2xl mb-1">💰</div><p className={darkMode ? 'text-gray-500' : 'text-green-500'} text-xs>积分消耗</p></div>
             </div>
           </div>
         </div>
-      </div>
+     积分: {isTestUser ? '无限' : credits}</div>
     </div>
   )
 }

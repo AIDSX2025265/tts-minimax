@@ -7,6 +7,7 @@ import { useRouter } from 'next/navigation'
 export default function SignIn() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+  const [confirmPassword, setConfirmPassword] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const [isRegister, setIsRegister] = useState(false)
@@ -16,17 +17,49 @@ export default function SignIn() {
     e.preventDefault()
     setLoading(true)
     setError('')
-    
-    const result = await signIn('credentials', {
-      email,
-      password,
-      redirect: false,
-    })
 
-    if (result?.ok) {
-      router.push('/')
+    if (isRegister) {
+      if (password !== confirmPassword) {
+        setError('两次密码输入不一致')
+        setLoading(false)
+        return
+      }
+      if (password.length < 6) {
+        setError('密码至少6位')
+        setLoading(false)
+        return
+      }
+      // 注册新用户，赠送10000积分
+      const users = JSON.parse(localStorage.getItem('tts_users') || '[]')
+      if (users.find((u: any) => u.email === email)) {
+        setError('该邮箱已注册')
+        setLoading(false)
+        return
+      }
+      users.push({ email, password, credits: 10000 })
+      localStorage.setItem('tts_users', JSON.stringify(users))
+      // 自动登录
+      const result = await signIn('credentials', { email, password, register: 'true', redirect: false })
+      if (result?.ok) router.push('/')
+      else setError('注册失败')
     } else {
-      setError(isRegister ? '注册失败' : '邮箱或密码错误')
+      // 登录验证
+      const users = JSON.parse(localStorage.getItem('tts_users') || '[]')
+      const user = users.find((u: any) => u.email === email && u.password === password)
+      if (!user) {
+        // 测试账号
+        if (email === 'test@example.com' && password === 'password123') {
+          const result = await signIn('credentials', { email, password, redirect: false })
+          if (result?.ok) router.push('/')
+          else setError('登录失败')
+        } else {
+          setError('邮箱或密码错误')
+        }
+      } else {
+        const result = await signIn('credentials', { email, password, redirect: false })
+        if (result?.ok) router.push('/')
+        else setError('登录失败')
+      }
     }
     setLoading(false)
   }
@@ -41,7 +74,7 @@ export default function SignIn() {
             </svg>
           </div>
           <h1 className="text-2xl font-bold text-white">{isRegister ? '创建账号' : '欢迎回来'}</h1>
-          <p className="text-green-400">{isRegister ? '注册一个新账号' : '登录你的账号'}</p>
+          <p className="text-green-400">{isRegister ? '注册送10000积分' : '登录你的账号'}</p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-4">
@@ -61,7 +94,7 @@ export default function SignIn() {
             <label className="block text-green-400 text-sm mb-2">密码</label>
             <input
               type="password"
-              placeholder="••••••••"
+              placeholder="请输入密码"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               className="w-full p-4 bg-black/30 border border-green-700/30 rounded-xl text-white placeholder-green-600/50 focus:outline-none focus:border-green-500 transition"
@@ -69,6 +102,21 @@ export default function SignIn() {
               minLength={6}
             />
           </div>
+
+          {isRegister && (
+            <div>
+              <label className="block text-green-400 text-sm mb-2">确认密码</label>
+              <input
+                type="password"
+                placeholder="请再次输入密码"
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                className="w-full p-4 bg-black/30 border border-green-700/30 rounded-xl text-white placeholder-green-600/50 focus:outline-none focus:border-green-500 transition"
+                required={isRegister}
+                minLength={6}
+              />
+            </div>
+          )}
 
           {error && (
             <div className="p-3 bg-red-500/20 border border-red-500/30 rounded-xl text-red-400 text-sm text-center">
@@ -81,7 +129,7 @@ export default function SignIn() {
             disabled={loading}
             className="w-full py-4 bg-gradient-to-r from-green-600 to-emerald-700 hover:from-green-500 hover:to-emerald-600 text-white rounded-xl font-medium transition-all transform hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 flex items-center justify-center gap-2 shadow-lg shadow-green-500/20"
           >
-            {loading ? '处理中...' : (isRegister ? '注册' : '登录')}
+            {loading ? '处理中...' : (isRegister ? '注册并登录' : '登录')}
           </button>
         </form>
 
@@ -93,6 +141,14 @@ export default function SignIn() {
             {isRegister ? '已有账号？登录' : '没有账号？注册'}
           </button>
         </div>
+
+        {!isRegister && (
+          <div className="mt-6 p-4 bg-green-900/30 border border-green-700/30 rounded-xl">
+            <p className="text-green-400 text-sm text-center mb-2">💡 提示</p>
+            <p className="text-green-500 text-xs text-center">新用户注册赠送10000积分</p>
+            <p className="text-green-500 text-xs text-center">1000字消耗约¥0.07</p>
+          </div>
+        )}
 
         <button 
           onClick={() => router.push('/')} 
