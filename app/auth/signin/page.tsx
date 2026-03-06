@@ -83,7 +83,7 @@ export default function SignIn() {
         </div>
 
         {!isRegister && (
-          <div className="mt-6 p-4 bg-green-900/30 border border-gray-300 rounded-xl">
+          <div className="mt-6 p-4 bg-blue-50 border border-gray-300 rounded-xl">
             <p className="text-gray-600 text-sm text-center">💡 新用户请联系管理员充值积分</p>
           </div>
         )}

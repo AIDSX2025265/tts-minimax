@@ -87,7 +87,7 @@ export default function Admin() {
               placeholder="管理员密码"
               value={adminPassword}
               onChange={(e) => setAdminPassword(e.target.value)}
-              className="w-full p-4 bg-white border border-gray-300 rounded-xl text-white placeholder-green-600/50 focus:outline-none focus:border-green-500 mb-4"
+              className="w-full p-4 bg-white border border-gray-300 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-blue-400 mb-4"
             />
             <button onClick={login} className="w-full py-4 bg-gradient-to-r from-blue-500 to-sky-500 text-white rounded-xl font-medium">
               登录

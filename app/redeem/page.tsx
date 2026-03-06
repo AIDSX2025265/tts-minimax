@@ -46,14 +46,14 @@ export default function Redeem() {
           <h1 className="text-2xl font-bold text-white text-center mb-2">兑换积分</h1>
           <p className="text-gray-600 text-center mb-6">输入兑换码兑换积分</p>
           
-          <input type="text" placeholder="请输入兑换码" value={code} onChange={(e) => setCode(e.target.value.toUpperCase())} className="w-full p-4 bg-white border border-gray-300 rounded-xl text-white placeholder-green-600/50 focus:outline-none focus:border-green-500 mb-4 text-center text-lg font-mono" />
+          <input type="text" placeholder="请输入兑换码" value={code} onChange={(e) => setCode(e.target.value.toUpperCase())} className="w-full p-4 bg-white border border-gray-300 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-blue-400 mb-4 text-center text-lg font-mono" />
 
           <button onClick={redeem} disabled={loading || !session} className="w-full py-4 bg-gradient-to-r from-blue-500 to-sky-500 text-white rounded-xl font-medium disabled:opacity-50">
             {loading ? '兑换中...' : '立即兑换'}
           </button>
 
           {result.message && (
-            <div className={`mt-4 p-4 rounded-xl text-center ${result.success ? 'bg-green-600/20 border border-green-500 text-gray-600' : 'bg-red-600/20 border border-red-500 text-red-400'}`}>
+            <div className={`mt-4 p-4 rounded-xl text-center ${result.success ? 'bg-blue-50 border border-blue-400 text-gray-600' : 'bg-red-600/20 border border-red-500 text-red-400'}`}>
               {result.message}
             </div>
           )}
