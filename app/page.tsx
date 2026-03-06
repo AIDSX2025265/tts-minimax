@@ -4,6 +4,8 @@ import { signIn, signOut, useSession } from 'next-auth/react'
 import { useState, useEffect } from 'react'
 
 const VOICES = [
+  { id: 'yansangdage002', name: '烟嗓大哥' },
+  { id: 'achuan_voice_003', name: '川哥（真人音色）' },
   { id: 'chuan_ge', name: '川哥' },
 ]
 
