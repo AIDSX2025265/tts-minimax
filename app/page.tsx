@@ -6,7 +6,6 @@ import { useState, useEffect } from 'react'
 const VOICES = [
   { id: 'yansangdage002', name: '烟嗓大哥' },
   { id: 'achuan_voice_003', name: '川哥（真人音色）' },
-  { id: 'chuan_ge', name: '川哥' },
 ]
 
 const EMOTIONS = [
@@ -205,7 +204,8 @@ export default function Home() {
               <div>
                 <label className={`block text-xs ${theme.textSecondary} mb-2`}>音色</label>
                 <select value={voice} onChange={(e) => setVoice(e.target.value)} className={`w-full p-3 ${theme.input} rounded-xl text-sm`}>
-                  <option value="achuan_voice_003">川哥</option>
+                  <option value="achuan_voice_003">川哥（真人音色）</option>
+                  <option value="yansangdage002">烟嗓大哥</option>
                 </select>
               </div>
               <div>
