@@ -145,17 +145,17 @@ export default function Home() {
 
   // 墨绿色主题
   const theme = darkMode ? {
-    bg: 'from-slate-900 via-green-900 to-slate-800',
-    card: 'bg-black/30 border-green-800/30',
+    bg: 'from-slate-900 via-blue-950 to-slate-900',
+    card: 'bg-slate-800/50 border-blue-500/20',
     text: 'text-white',
-    textSecondary: 'text-green-300',
-    input: 'bg-black/30 border-green-700/30 text-white placeholder-green-600/50',
-    button: 'from-green-600 to-emerald-700 hover:from-green-500 hover:to-emerald-600',
+    textSecondary: 'text-blue-300',
+    input: 'bg-black/30 border-blue-500/30 text-white placeholder-green-600/50',
+    button: 'from-blue-600 to-cyan-600 hover:from-green-500 hover:to-emerald-600',
   } : {
     bg: 'from-green-50 via-emerald-50 to-green-100',
-    card: 'bg-white/80 border-green-200',
+    card: 'bg-white/80 border-blue-200',
     text: 'text-gray-800',
-    textSecondary: 'text-green-700',
+    textSecondary: 'text-blue-700',
     input: 'bg-white border-green-300 text-gray-800 placeholder-green-500',
     button: 'from-green-600 to-emerald-600 hover:from-green-500 hover:to-emerald-500',
   }
@@ -166,7 +166,7 @@ export default function Home() {
   if (session) {
     return (
       <div className={`min-h-screen bg-gradient-to-br ${theme.bg}`}>
-        <header className={`border-b ${darkMode ? 'border-green-800/50 bg-black/40' : 'border-green-200 bg-white/80'} backdrop-blur-md`}>
+        <header className={`border-b ${darkMode ? 'border-green-800/50 bg-black/40' : 'border-blue-200 bg-white/80'} backdrop-blur-md`}>
           <div className="max-w-4xl mx-auto px-6 py-4 flex justify-between items-center">
             <div className="flex items-center gap-3">
               <div className={`w-10 h-10 bg-gradient-to-r ${theme.button} rounded-xl flex items-center justify-center shadow-lg`}>
@@ -177,22 +177,22 @@ export default function Home() {
               <span className={`text-xl font-bold ${theme.text}`}>大师兄的AI配音坊</span>
             </div>
             <div className="flex items-center gap-3">
-              <div className={`px-4 py-1.5 rounded-full ${darkMode ? 'bg-green-900/50' : 'bg-green-100'} border ${darkMode ? 'border-green-700/50' : 'border-green-300'}`}>
-                <span className={`text-sm ${darkMode ? 'text-green-400' : 'text-green-700'}`}>💰 {isTestUser ? '无限' : credits} 积分</span>
+              <div className={`px-4 py-1.5 rounded-full ${darkMode ? 'bg-blue-900/50' : 'bg-blue-100'} border ${darkMode ? 'border-green-700/50' : 'border-green-300'}`}>
+                <span className={`text-sm ${darkMode ? 'text-blue-400' : 'text-blue-700'}`}>💰 {isTestUser ? '无限' : credits} 积分</span>
               </div>
-              <button onClick={() => setShowSaved(!showSaved)} className={`px-4 py-1.5 rounded-full text-sm ${showSaved ? `text-white bg-gradient-to-r ${theme.button}` : (darkMode ? 'bg-green-900/50 text-green-300' : 'bg-green-100 text-green-700')}`}>
+              <button onClick={() => setShowSaved(!showSaved)} className={`px-4 py-1.5 rounded-full text-sm ${showSaved ? `text-white bg-gradient-to-r ${theme.button}` : (darkMode ? 'bg-blue-900/50 text-blue-300' : 'bg-blue-100 text-blue-700')}`}>
                 {showSaved ? '📋 历史' : `⭐ ${savedList.length}`}
               </button>
-              <button onClick={toggleDarkMode} className={`p-2 rounded-full ${darkMode ? 'bg-green-900/50 text-green-300' : 'bg-green-100 text-green-700'}`}>
+              <button onClick={toggleDarkMode} className={`p-2 rounded-full ${darkMode ? 'bg-blue-900/50 text-blue-300' : 'bg-blue-100 text-blue-700'}`}>
                 {darkMode ? '☀️' : '🌙'}
               </button>
-              <div className={`w-8 h-8 rounded-full bg-gradient-to-r from-green-500 to-emerald-500 flex items-center justify-center text-white text-sm`}>
+              <div className={`w-8 h-8 rounded-full bg-gradient-to-r from-blue-500 to-cyan-500 flex items-center justify-center text-white text-sm`}>
                 {session.user?.email?.charAt(0).toUpperCase()}
               </div>
-              <button onClick={() => signIn()} className={`px-3 py-1.5 rounded-full text-sm ${darkMode ? 'bg-green-900/50 text-green-300' : 'bg-green-100 text-green-700'}`}>
+              <button onClick={() => signIn()} className={`px-3 py-1.5 rounded-full text-sm ${darkMode ? 'bg-blue-900/50 text-blue-300' : 'bg-blue-100 text-blue-700'}`}>
                 切换
               </button>
-              <button onClick={() => signOut()} className={`px-3 py-1.5 rounded-full text-sm ${darkMode ? 'bg-green-900/50 text-green-300' : 'bg-green-100 text-green-700'}`}>
+              <button onClick={() => signOut()} className={`px-3 py-1.5 rounded-full text-sm ${darkMode ? 'bg-blue-900/50 text-blue-300' : 'bg-blue-100 text-blue-700'}`}>
                 退出
               </button>
             </div>
@@ -237,9 +237,9 @@ export default function Home() {
                 <textarea value={text} onChange={(e) => setText(e.target.value)} placeholder="输入要转换的文字..." className={`w-full h-40 p-4 ${theme.input} rounded-xl text-sm resize-none`} />
                 <div className="flex justify-between items-center mt-4">
                   <div className="flex items-center gap-4">
-                    <span className={`text-sm ${darkMode ? 'text-green-500' : 'text-green-600'}`}>{charCount} 字符</span>
+                    <span className={`text-sm ${darkMode ? 'text-blue-500' : 'text-blue-600'}`}>{charCount} 字符</span>
                     {charCount > 0 && (
-                      <span className={`text-sm ${darkMode ? 'text-green-400' : 'text-green-600'}`}>💰 {costCredits} 积分 (100积分=10000字符)</span>
+                      <span className={`text-sm ${darkMode ? 'text-blue-400' : 'text-blue-600'}`}>💰 {costCredits} 积分 (100积分=10000字符)</span>
                     )}
                   </div>
                   <button onClick={generateAudio} disabled={loading || !text.trim()} className={`px-8 py-3 bg-gradient-to-r ${theme.button} text-white rounded-xl text-sm font-medium disabled:opacity-50`}>
@@ -253,8 +253,8 @@ export default function Home() {
                 <div className="flex items-center justify-between mb-3">
                   <span className={`text-sm ${theme.textSecondary}`}>最新生成</span>
                   <div className="flex gap-3">
-                    <button onClick={() => saveAudio({id: Date.now().toString(), text, url: audioUrl, time: new Date().toISOString()})} className={`text-sm ${darkMode ? 'text-green-400' : 'text-green-600'}`}>⭐ 保存</button>
-                    <a href={audioUrl} download="audio.mp3" className={`text-sm ${darkMode ? 'text-green-400' : 'text-green-600'}`}>📥 下载</a>
+                    <button onClick={() => saveAudio({id: Date.now().toString(), text, url: audioUrl, time: new Date().toISOString()})} className={`text-sm ${darkMode ? 'text-blue-400' : 'text-blue-600'}`}>⭐ 保存</button>
+                    <a href={audioUrl} download="audio.mp3" className={`text-sm ${darkMode ? 'text-blue-400' : 'text-blue-600'}`}>📥 下载</a>
                   </div>
                 </div>
                 <audio controls src={audioUrl} className="w-full h-10" />
@@ -270,14 +270,14 @@ export default function Home() {
                   <div key={item.id} className={`flex items-center gap-4 p-4 rounded-xl ${darkMode ? 'bg-black/20' : 'bg-green-50'}`}>
                     <div className="flex-1 min-w-0">
                       <p className={`text-sm ${theme.text} truncate`}>{item.text}</p>
-                      <p className={`text-xs ${darkMode ? 'text-green-600' : 'text-green-500'}`}>{new Date(item.time).toLocaleString()}</p>
+                      <p className={`text-xs ${darkMode ? 'text-blue-600' : 'text-blue-500'}`}>{new Date(item.time).toLocaleString()}</p>
                     </div>
                     <div className="flex gap-2">
                       {showSaved && (
-                        <button onClick={() => deleteSaved(item.id)} className={`p-2 ${darkMode ? 'text-green-600' : 'text-green-500'}`}>🗑️</button>
+                        <button onClick={() => deleteSaved(item.id)} className={`p-2 ${darkMode ? 'text-blue-600' : 'text-blue-500'}`}>🗑️</button>
                       )}
                       {!item.saved && !showSaved && (
-                        <button onClick={() => saveAudio(item)} className={`p-2 ${darkMode ? 'text-green-400' : 'text-green-600'}`}>⭐</button>
+                        <button onClick={() => saveAudio(item)} className={`p-2 ${darkMode ? 'text-blue-400' : 'text-blue-600'}`}>⭐</button>
                       )}
                       <audio controls src={item.url} className="h-8 w-36" />
                     </div>
@@ -305,7 +305,7 @@ export default function Home() {
           <button onClick={() => signIn()} className={`w-full py-4 bg-gradient-to-r ${theme.button} text-white rounded-xl font-medium`}>
             立即体验
           </button>
-          <div className={`mt-6 pt-6 border-t ${darkMode ? 'border-green-800/30' : 'border-green-200'}`}>
+          <div className={`mt-6 pt-6 border-t ${darkMode ? 'border-blue-800/30' : 'border-blue-200'}`}>
             <div className="grid grid-cols-3 gap-4 text-center">
               <div><div className="text-2xl mb-1">🎤</div><p className={`${theme.textSecondary} text-xs`}>真人音色</p></div>
               <div><div className="text-2xl mb-1">⚡</div><p className={`${theme.textSecondary} text-xs`}>极速生成</p></div>
