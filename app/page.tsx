@@ -61,7 +61,7 @@ export default function Home() {
     setLoading(false)
   }
 
-  // 日间模式 = 墨绿色, 夜间模式 = 黑色
+  // 夜间模式 = 黑色, 日间模式 = 墨绿色 (默认)
   const theme = darkMode ? {
     bg: 'from-gray-900 via-gray-800 to-gray-900',
     card: 'bg-gray-800/50 border-gray-700',
@@ -71,10 +71,12 @@ export default function Home() {
     input: 'bg-gray-900/50 border-gray-600 text-white placeholder-gray-500',
     select: 'bg-gray-900/50 border-gray-600 text-white',
     selectOption: 'bg-gray-800',
-    button: 'from-gray-600 to-gray-700 hover:from-gray-500 hover:to-gray-600',
     header: 'border-gray-700 bg-gray-900/80',
     icon: 'text-gray-400',
     accent: 'text-gray-300',
+    avatar: 'bg-gray-600',
+    buttonBg: 'from-gray-600 to-gray-700 hover:from-gray-500 hover:to-gray-600',
+    dot: 'bg-gray-400',
   } : {
     bg: 'from-slate-900 via-green-900 to-slate-800',
     card: 'bg-black/30 border-green-800/30',
@@ -84,11 +86,15 @@ export default function Home() {
     input: 'bg-black/30 border-green-700/30 text-white placeholder-green-600/50',
     select: 'bg-black/30 border-green-700/30 text-white',
     selectOption: 'bg-slate-900',
-    button: 'from-green-600 to-emerald-700 hover:from-green-500 hover:to-emerald-600',
     header: 'border-green-800/50 bg-black/40',
     icon: 'text-green-400',
     accent: 'text-green-400',
+    avatar: 'bg-green-600',
+    buttonBg: 'from-green-600 to-emerald-700 hover:from-green-500 hover:to-emerald-600',
+    dot: 'bg-green-500',
   }
+
+  const IconBg = darkMode ? 'from-gray-600 to-gray-700' : 'from-green-600 to-emerald-700'
 
   if (session) {
     return (
@@ -96,7 +102,7 @@ export default function Home() {
         <header className={`border-b ${theme.header} backdrop-blur-md`}>
           <div className="max-w-4xl mx-auto px-6 py-4 flex justify-between items-center">
             <div className="flex items-center gap-3">
-              <div className={`w-10 h-10 bg-gradient-to-r ${darkMode ? 'from-gray-600 to-gray-700' : 'from-green-600 to-emerald-700'} rounded-xl flex items-center justify-center shadow-lg`}>
+              <div className={`w-10 h-10 bg-gradient-to-r ${IconBg} rounded-xl flex items-center justify-center shadow-lg`}>
                 <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" />
                 </svg>
@@ -112,12 +118,12 @@ export default function Home() {
                 )}
               </button>
               <div className="flex items-center gap-2 text-gray-300">
-                <div className={`w-8 h-8 rounded-full flex items-center justify-center text-white text-sm ${darkMode ? 'bg-gray-600' : 'bg-green-600'}`}>
+                <div className={`w-8 h-8 rounded-full flex items-center justify-center text-white text-sm ${theme.avatar}`}>
                   {session.user?.email?.charAt(0).toUpperCase()}
                 </div>
                 <span className={`text-sm hidden sm:inline ${theme.text}`}>{session.user?.email}</span>
               </div>
-              <button onClick={() => signOut()} className={`px-4 py-2 rounded-lg text-sm transition ${darkMode ? 'bg-gray-700 hover:bg-gray-600 text-gray-300' : 'bg-green-900/50 hover:bg-green-800/50 text-green-300 border border-green-700/50'}`}>
+              <button onClick={() => signOut()} className={`px-4 py-2 rounded-lg text-sm transition ${darkMode ? 'bg-gray-700 hover:bg-gray-600 text-gray-300 border border-gray-600' : 'bg-green-900/50 hover:bg-green-800/50 text-green-300 border border-green-700/50'}`}>
                 退出
               </button>
             </div>
@@ -151,13 +157,13 @@ export default function Home() {
 
           <div className={`${theme.card} backdrop-blur-sm border rounded-2xl p-6 mb-8`}>
             <h2 className={`text-lg font-semibold ${theme.text} mb-4 flex items-center gap-2`}>
-              <span className={`w-2 h-2 ${darkMode ? 'bg-gray-400' : 'bg-green-500'} rounded-full animate-pulse`}></span>
+              <span className={`w-2 h-2 ${theme.dot} rounded-full animate-pulse`}></span>
               生成语音
             </h2>
             <textarea value={text} onChange={(e) => setText(e.target.value)} placeholder="输入要转换的文字..." className={`w-full h-40 p-4 ${theme.input} rounded-xl focus:outline-none transition resize-none`} />
             <div className="flex justify-between items-center mt-4">
               <span className={`${darkMode ? 'text-gray-500' : 'text-green-600'} text-sm`}>{text.length} / 1000 字符</span>
-              <button onClick={generateAudio} disabled={loading || !text.trim()} className={`px-8 py-3 bg-gradient-to-r ${theme.button} text-white rounded-xl font-medium disabled:opacity-50 disabled:cursor-not-allowed transition-all transform hover:scale-105 active:scale-95 flex items-center gap-2 shadow-lg`}>
+              <button onClick={generateAudio} disabled={loading || !text.trim()} className={`px-8 py-3 bg-gradient-to-r ${theme.buttonBg} text-white rounded-xl font-medium disabled:opacity-50 disabled:cursor-not-allowed transition-all transform hover:scale-105 active:scale-95 flex items-center gap-2 shadow-lg`}>
                 {loading ? (<><svg className="animate-spin w-5 h-5" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path></svg>生成中...</>) : (<><svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>生成音频</>)}
               </button>
             </div>
@@ -205,7 +211,7 @@ export default function Home() {
     <div className={`min-h-screen bg-gradient-to-br ${theme.bg} flex items-center justify-center p-6`}>
       <div className="max-w-md w-full">
         <div className="text-center mb-8">
-          <div className={`w-20 h-20 bg-gradient-to-r ${darkMode ? 'from-gray-600 to-gray-700' : 'from-green-600 to-emerald-700'} rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-2xl`}>
+          <div className={`w-20 h-20 bg-gradient-to-r ${IconBg} rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-2xl`}>
             <svg className="w-12 h-12 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" /></svg>
           </div>
           <h1 className={`text-4xl font-bold ${theme.text} mb-2`}>MiniMax TTS</h1>
@@ -213,14 +219,14 @@ export default function Home() {
         </div>
         <div className={`${theme.card} backdrop-blur-sm border rounded-2xl p-8 shadow-2xl`}>
           <h2 className={`text-xl font-semibold ${theme.text} text-center mb-6`}>登录体验</h2>
-          <button onClick={() => signIn()} className={`w-full py-4 bg-gradient-to-r ${theme.button} text-white rounded-xl font-medium transition-all transform hover:scale-[1.02] active:scale-[0.98] flex items-center justify-center gap-2 shadow-lg`}>
+          <button onClick={() => signIn()} className={`w-full py-4 bg-gradient-to-r ${theme.buttonBg} text-white rounded-xl font-medium transition-all transform hover:scale-[1.02] active:scale-[0.98] flex items-center justify-center gap-2 shadow-lg`}>
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1" /></svg>立即体验
           </button>
           <div className="mt-6 pt-6 border-t border-gray-700">
             <div className="grid grid-cols-3 gap-4 text-center">
-              <div><div className="text-2xl mb-1">🎙️</div><p className={`${darkMode ? 'text-gray-500' : 'text-green-500'} text-xs`}>克隆声音</p></div>
-              <div><div className="text-2xl mb-1">⚡</div><p className={`${darkMode ? 'text-gray-500' : 'text-green-500'} text-xs`}>极速生成</p></div>
-              <div><div className="text-2xl mb-1">🔊</div><p className={`${darkMode ? 'text-gray-500' : 'text-green-500'} text-xs`}>高清音质</p></div>
+              <div><div className="text-2xl mb-1">🎙️</div><p className={darkMode ? 'text-gray-500' : 'text-green-500'} text-xs">克隆声音</p></div>
+              <div><div className="text-2xl mb-1">⚡</div><p className={darkMode ? 'text-gray-500' : 'text-green-500'} text-xs">极速生成</p></div>
+              <div><div className="text-2xl mb-1">🔊</div><p className={darkMode ? 'text-gray-500' : 'text-green-500'} text-xs">高清音质</p></div>
             </div>
           </div>
         </div>
