@@ -182,6 +182,7 @@ export default function Home() {
               <div className="w-8 h-8 rounded-full bg-gradient-to-r from-blue-500 to-cyan-500 flex items-center justify-center text-white text-sm font-medium">
                 {session.user?.email?.charAt(0).toUpperCase()}
               </div>
+              <button onClick={() => signIn()} className="px-3 py-1.5 rounded-full bg-slate-700 hover:bg-slate-600 text-sm">切换账号</button>
               <button onClick={() => signOut()} className="px-3 py-1.5 rounded-full bg-slate-700 hover:bg-slate-600 text-sm">
                 退出
               </button>
