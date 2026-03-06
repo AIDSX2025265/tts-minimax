@@ -47,7 +47,7 @@ export default function Home() {
   const [credits, setCredits] = useState(0)
 
   const charCount = text.length
-  const costCredits = Math.ceil(charCount / CHARS_PER_CREDIT)
+  const costCredits = Math.ceil(charCount / 100)
 
   useEffect(() => {
     const saved = localStorage.getItem('darkMode')
