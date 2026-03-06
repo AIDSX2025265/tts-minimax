@@ -20,7 +20,7 @@ const SPEEDS = [
 
 const PRICE_PER_1K = 0.01
 const CNY_RATE = 7
-const CHARS_PER_CREDIT = 1000
+const CHARS_PER_CREDIT = 10000
 
 interface AudioItem {
   id: string
@@ -45,7 +45,7 @@ export default function Home() {
   const [showRecharge, setShowRecharge] = useState(false)
 
   const charCount = text.length
-  const costCredits = Math.ceil(charCount / CHARS_PER_CREDIT)
+  const costCredits = Math.ceil(charCount / 10000)
   const costCNY = (charCount / 1000) * PRICE_PER_1K * CNY_RATE
 
   useEffect(() => {
@@ -134,7 +134,7 @@ export default function Home() {
       users[userIndex].credits = (users[userIndex].credits || 0) + 1000
       setCredits(users[userIndex].credits)
       localStorage.setItem('tts_users', JSON.stringify(users))
-      alert('充值成功！+1000积分')
+      alert('充值成功！+10000积分')
     }
   }
 
@@ -243,7 +243,7 @@ export default function Home() {
                   <div className="text-xs text-gray-500 mt-1">¥7</div>
                 </button>
               </div>
-              <p className={`text-xs mt-4 ${theme.textMuted2}`}>* 1积分 = 1000字符</p>
+              <p className={`text-xs mt-4 ${theme.textMuted2}`}>* 1积分 = 100000字符</p>
             </div>
           </div>
         )}
@@ -295,7 +295,7 @@ export default function Home() {
                   </button>
                 </div>
                 <div className={`mt-3 text-xs ${darkMode ? 'text-gray-500' : 'text-green-700/70'}`}>
-                  📊 计费: 1积分 = 1000字符
+                  📊 计费: 1积分 = 100000字符
                 </div>
               </>
             )}
