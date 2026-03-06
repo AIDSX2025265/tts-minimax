@@ -18,6 +18,11 @@ const SPEEDS = [
   { id: 1.5, name: '1.5x 极速' },
 ]
 
+// MiniMax TTS 计费：speech-2.6-hd = $100/百万字符
+const PRICE_PER_CHAR = 0.0001 / 1000 // $0.0001 per 1000 chars = $0.1 per 1000 chars
+const PRICE_PER_1K = 0.01 // 1000字符约0.01美元
+const CNY_RATE = 7 // 1美元 ≈ 7元
+
 interface AudioItem {
   id: string
   text: string
@@ -38,6 +43,10 @@ export default function Home() {
   const [speed, setSpeed] = useState(1)
   const [darkMode, setDarkMode] = useState(false)
 
+  const charCount = text.length
+  const costUSD = (charCount / 1000) * PRICE_PER_1K
+  const costCNY = costUSD * CNY_RATE
+
   useEffect(() => {
     const saved = localStorage.getItem('darkMode')
     if (saved !== null) setDarkMode(saved === 'true')
@@ -45,12 +54,8 @@ export default function Home() {
     const savedAudios = localStorage.getItem('savedAudios')
     if (savedAudios) {
       const parsed = JSON.parse(savedAudios) as AudioItem[]
-      // 过滤掉超过24小时的
       const now = Date.now()
-      const filtered = parsed.filter(item => {
-        const itemTime = new Date(item.time).getTime()
-        return now - itemTime < 24 * 60 * 60 * 1000
-      })
+      const filtered = parsed.filter(item => now - new Date(item.time).getTime() < 24 * 60 * 60 * 1000)
       setSavedList(filtered)
       localStorage.setItem('savedAudios', JSON.stringify(filtered))
     }
@@ -98,7 +103,6 @@ export default function Home() {
       setSavedList(newSaved)
       localStorage.setItem('savedAudios', JSON.stringify(newSaved))
     }
-    // 更新历史记录中的 saved 状态
     setHistory(history.map(h => h.id === item.id ? { ...h, saved: true } : h))
   }
 
@@ -114,7 +118,7 @@ export default function Home() {
     text: 'text-white',
     textMuted: 'text-gray-300',
     textMuted2: 'text-gray-400',
-    input: 'bg-gray-900/50 border-gray-600 text-white placeholder-gray-500',
+    input: 'bg-gray-900/50 border-white placeholder-gray--gray-600 text500',
     select: 'bg-gray-900/50 border-gray-600 text-white',
     selectOption: 'bg-gray-800',
     header: 'border-gray-700 bg-gray-900/80',
@@ -141,7 +145,6 @@ export default function Home() {
   }
 
   const IconBg = darkMode ? 'from-gray-600 to-gray-700' : 'from-green-600 to-emerald-700'
-
   const displayList = showSaved ? savedList : history
 
   if (session) {
@@ -215,10 +218,20 @@ export default function Home() {
               <>
                 <textarea value={text} onChange={(e) => setText(e.target.value)} placeholder="输入要转换的文字..." className={`w-full h-40 p-4 ${theme.input} rounded-xl focus:outline-none transition resize-none`} />
                 <div className="flex justify-between items-center mt-4">
-                  <span className={`${darkMode ? 'text-gray-500' : 'text-green-600'} text-sm`}>{text.length} / 1000 字符</span>
+                  <div className="flex items-center gap-4">
+                    <span className={`${darkMode ? 'text-gray-500' : 'text-green-600'} text-sm`}>{charCount} / 1000 字符</span>
+                    {charCount > 0 && (
+                      <span className={`${darkMode ? 'text-gray-500' : 'text-green-600'} text-sm`}>
+                        💰 预计消耗: ${costUSD.toFixed(4)} ≈ ¥{costCNY.toFixed(2)}
+                      </span>
+                    )}
+                  </div>
                   <button onClick={generateAudio} disabled={loading || !text.trim()} className={`px-8 py-3 bg-gradient-to-r ${theme.buttonBg} text-white rounded-xl font-medium disabled:opacity-50 disabled:cursor-not-allowed transition-all transform hover:scale-105 active:scale-95 flex items-center gap-2 shadow-lg`}>
                     {loading ? (<><svg className="animate-spin w-5 h-5" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path></svg>生成中...</>) : (<><svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>生成音频</>)}
                   </button>
+                </div>
+                <div className={`mt-3 text-xs ${darkMode ? 'text-gray-500' : 'text-green-700/70'}`}>
+                  📊 计费说明: speech-2.6-hd = $0.1/千字符 (约¥0.7)
                 </div>
               </>
             )}
