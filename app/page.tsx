@@ -18,12 +18,22 @@ const SPEEDS = [
   { id: 1.5, name: '1.5x 极速' },
 ]
 
+interface AudioItem {
+  id: string
+  text: string
+  url: string
+  time: string
+  saved?: boolean
+}
+
 export default function Home() {
   const { data: session } = useSession()
   const [text, setText] = useState('')
   const [audioUrl, setAudioUrl] = useState('')
   const [loading, setLoading] = useState(false)
-  const [history, setHistory] = useState<{text: string, url: string, time: string}[]>([])
+  const [history, setHistory] = useState<AudioItem[]>([])
+  const [savedList, setSavedList] = useState<AudioItem[]>([])
+  const [showSaved, setShowSaved] = useState(false)
   const [emotion, setEmotion] = useState('')
   const [speed, setSpeed] = useState(1)
   const [darkMode, setDarkMode] = useState(false)
@@ -31,6 +41,19 @@ export default function Home() {
   useEffect(() => {
     const saved = localStorage.getItem('darkMode')
     if (saved !== null) setDarkMode(saved === 'true')
+    
+    const savedAudios = localStorage.getItem('savedAudios')
+    if (savedAudios) {
+      const parsed = JSON.parse(savedAudios) as AudioItem[]
+      // 过滤掉超过24小时的
+      const now = Date.now()
+      const filtered = parsed.filter(item => {
+        const itemTime = new Date(item.time).getTime()
+        return now - itemTime < 24 * 60 * 60 * 1000
+      })
+      setSavedList(filtered)
+      localStorage.setItem('savedAudios', JSON.stringify(filtered))
+    }
   }, [])
 
   const toggleDarkMode = () => {
@@ -50,8 +73,15 @@ export default function Home() {
       })
       const data = await res.json()
       if (data.audio_url) {
+        const newItem: AudioItem = {
+          id: Date.now().toString(),
+          text,
+          url: data.audio_url,
+          time: new Date().toISOString(),
+          saved: false
+        }
         setAudioUrl(data.audio_url)
-        setHistory([{text, url: data.audio_url, time: new Date().toLocaleTimeString()}, ...history])
+        setHistory([newItem, ...history])
       } else {
         alert(data.error || '生成失败')
       }
@@ -61,7 +91,23 @@ export default function Home() {
     setLoading(false)
   }
 
-  // 夜间模式 = 黑色, 日间模式 = 墨绿色 (默认)
+  const saveAudio = (item: AudioItem) => {
+    const exists = savedList.find(s => s.id === item.id)
+    if (!exists) {
+      const newSaved = [...savedList, { ...item, saved: true }]
+      setSavedList(newSaved)
+      localStorage.setItem('savedAudios', JSON.stringify(newSaved))
+    }
+    // 更新历史记录中的 saved 状态
+    setHistory(history.map(h => h.id === item.id ? { ...h, saved: true } : h))
+  }
+
+  const deleteSaved = (id: string) => {
+    const newSaved = savedList.filter(s => s.id !== id)
+    setSavedList(newSaved)
+    localStorage.setItem('savedAudios', JSON.stringify(newSaved))
+  }
+
   const theme = darkMode ? {
     bg: 'from-gray-900 via-gray-800 to-gray-900',
     card: 'bg-gray-800/50 border-gray-700',
@@ -96,6 +142,8 @@ export default function Home() {
 
   const IconBg = darkMode ? 'from-gray-600 to-gray-700' : 'from-green-600 to-emerald-700'
 
+  const displayList = showSaved ? savedList : history
+
   if (session) {
     return (
       <div className={`min-h-screen bg-gradient-to-br ${theme.bg}`}>
@@ -110,6 +158,9 @@ export default function Home() {
               <span className={`text-xl font-bold ${theme.text}`}>MiniMax TTS</span>
             </div>
             <div className="flex items-center gap-4">
+              <button onClick={() => setShowSaved(!showSaved)} className={`px-4 py-2 rounded-lg text-sm transition ${showSaved ? theme.buttonBg + ' text-white' : 'bg-green-900/50 text-green-300 hover:bg-green-800/50'}`}>
+                {showSaved ? '📋 历史记录' : '⭐ 已保存 (' + savedList.length + ')'}
+              </button>
               <button onClick={toggleDarkMode} className={`p-2 rounded-lg transition ${darkMode ? 'bg-gray-700 hover:bg-gray-600 text-gray-300' : 'bg-green-900/50 text-green-300 hover:bg-green-800/50'}`}>
                 {darkMode ? (
                   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" /></svg>
@@ -158,45 +209,63 @@ export default function Home() {
           <div className={`${theme.card} backdrop-blur-sm border rounded-2xl p-6 mb-8`}>
             <h2 className={`text-lg font-semibold ${theme.text} mb-4 flex items-center gap-2`}>
               <span className={`w-2 h-2 ${theme.dot} rounded-full animate-pulse`}></span>
-              生成语音
+              {showSaved ? '已保存的音频 (24小时内)' : '生成语音'}
             </h2>
-            <textarea value={text} onChange={(e) => setText(e.target.value)} placeholder="输入要转换的文字..." className={`w-full h-40 p-4 ${theme.input} rounded-xl focus:outline-none transition resize-none`} />
-            <div className="flex justify-between items-center mt-4">
-              <span className={`${darkMode ? 'text-gray-500' : 'text-green-600'} text-sm`}>{text.length} / 1000 字符</span>
-              <button onClick={generateAudio} disabled={loading || !text.trim()} className={`px-8 py-3 bg-gradient-to-r ${theme.buttonBg} text-white rounded-xl font-medium disabled:opacity-50 disabled:cursor-not-allowed transition-all transform hover:scale-105 active:scale-95 flex items-center gap-2 shadow-lg`}>
-                {loading ? (<><svg className="animate-spin w-5 h-5" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path></svg>生成中...</>) : (<><svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>生成音频</>)}
-              </button>
-            </div>
-            {audioUrl && (
+            {!showSaved && (
+              <>
+                <textarea value={text} onChange={(e) => setText(e.target.value)} placeholder="输入要转换的文字..." className={`w-full h-40 p-4 ${theme.input} rounded-xl focus:outline-none transition resize-none`} />
+                <div className="flex justify-between items-center mt-4">
+                  <span className={`${darkMode ? 'text-gray-500' : 'text-green-600'} text-sm`}>{text.length} / 1000 字符</span>
+                  <button onClick={generateAudio} disabled={loading || !text.trim()} className={`px-8 py-3 bg-gradient-to-r ${theme.buttonBg} text-white rounded-xl font-medium disabled:opacity-50 disabled:cursor-not-allowed transition-all transform hover:scale-105 active:scale-95 flex items-center gap-2 shadow-lg`}>
+                    {loading ? (<><svg className="animate-spin w-5 h-5" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path></svg>生成中...</>) : (<><svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>生成音频</>)}
+                  </button>
+                </div>
+              </>
+            )}
+            {audioUrl && !showSaved && (
               <div className={`mt-6 p-4 ${theme.card} rounded-xl`}>
                 <div className="flex items-center justify-between mb-3">
-                  <span className={`${theme.textMuted} text-sm`}>生成结果</span>
-                  <a href={audioUrl} download="audio.mp3" className={`${darkMode ? 'text-gray-400 hover:text-gray-300' : 'text-green-400 hover:text-green-300'} text-sm flex items-center gap-1`}>
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" /></svg>下载
-                  </a>
+                  <span className={`${theme.textMuted} text-sm`}>最新生成</span>
+                  <div className="flex gap-2">
+                    <button onClick={() => saveAudio({id: Date.now().toString(), text, url: audioUrl, time: new Date().toISOString()})} className={`text-sm flex items-center gap-1 ${darkMode ? 'text-gray-400 hover:text-gray-300' : 'text-green-400 hover:text-green-300'}`}>
+                      ⭐ 保存
+                    </button>
+                    <a href={audioUrl} download="audio.mp3" className={`text-sm flex items-center gap-1 ${darkMode ? 'text-gray-400 hover:text-gray-300' : 'text-green-400 hover:text-green-300'}`}>
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" /></svg>下载
+                    </a>
+                  </div>
                 </div>
                 <audio controls src={audioUrl} className="w-full h-12" />
               </div>
             )}
           </div>
 
-          {history.length > 0 && (
+          {displayList.length > 0 && (
             <div className={`${theme.card} backdrop-blur-sm border rounded-2xl p-6`}>
               <h3 className={`text-lg font-semibold ${theme.text} mb-4 flex items-center gap-2`}>
                 <svg className={`w-5 h-5 ${theme.icon}`} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-                历史记录
+                {showSaved ? '已保存' : '历史记录'}
               </h3>
-              <div className="space-y-3 max-h-60 overflow-y-auto">
-                {history.map((item, i) => (
-                  <div key={i} className={`flex items-center gap-4 p-3 rounded-xl transition cursor-pointer ${darkMode ? 'bg-gray-900/30 hover:bg-gray-900/50' : 'bg-black/20 hover:bg-black/40'}`} onClick={() => setAudioUrl(item.url)}>
-                    <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${darkMode ? 'bg-gray-700' : 'bg-green-900/50'}`}>
-                      <svg className={`w-5 h-5 ${theme.icon}`} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3" /></svg>
-                    </div>
+              <div className="space-y-3 max-h-96 overflow-y-auto">
+                {displayList.map((item) => (
+                  <div key={item.id} className={`flex items-center gap-4 p-4 rounded-xl ${darkMode ? 'bg-gray-900/30' : 'bg-black/20'}`}>
                     <div className="flex-1 min-w-0">
-                      <p className={`text-sm truncate ${theme.text}`}>{item.text}</p>
-                      <p className={`text-xs ${darkMode ? 'text-gray-500' : 'text-green-600'}`}>{item.time}</p>
+                      <p className={`text-sm ${theme.text}`}>{item.text}</p>
+                      <p className={`text-xs ${darkMode ? 'text-gray-500' : 'text-green-600'}`}>{new Date(item.time).toLocaleString()}</p>
                     </div>
-                    <audio controls src={item.url} className="h-8 w-32" onClick={(e) => e.stopPropagation()} />
+                    <div className="flex gap-2">
+                      {showSaved && (
+                        <button onClick={() => deleteSaved(item.id)} className={`p-2 rounded-lg ${darkMode ? 'hover:bg-gray-700 text-gray-500' : 'hover:bg-black/30 text-green-600'}`}>
+                          🗑️
+                        </button>
+                      )}
+                      {!item.saved && !showSaved && (
+                        <button onClick={() => saveAudio(item)} className={`p-2 rounded-lg ${darkMode ? 'hover:bg-gray-700 text-gray-500' : 'hover:bg-black/30 text-green-600'}`}>
+                          ⭐
+                        </button>
+                      )}
+                      <audio controls src={item.url} className="h-10 w-40" />
+                    </div>
                   </div>
                 ))}
               </div>
@@ -224,9 +293,9 @@ export default function Home() {
           </button>
           <div className="mt-6 pt-6 border-t border-gray-700">
             <div className="grid grid-cols-3 gap-4 text-center">
-              <div><div className="text-2xl mb-1">🎙️</div><p className={darkMode ? 'text-gray-500' : 'text-green-500'} text-xs">克隆声音</p></div>
-              <div><div className="text-2xl mb-1">⚡</div><p className={darkMode ? 'text-gray-500' : 'text-green-500'} text-xs">极速生成</p></div>
-              <div><div className="text-2xl mb-1">🔊</div><p className={darkMode ? 'text-gray-500' : 'text-green-500'} text-xs">高清音质</p></div>
+              <div><div className="text-2xl mb-1">🎙️</div><p className={darkMode ? 'text-gray-500' : 'text-green-500'} text-xs>克隆声音</p></div>
+              <div><div className="text-2xl mb-1">⚡</div><p className={darkMode ? 'text-gray-500' : 'text-green-500'} text-xs>极速生成</p></div>
+              <div><div className="text-2xl mb-1">🔊</div><p className={darkMode ? 'text-gray-500' : 'text-green-500'} text-xs>高清音质</p></div>
             </div>
           </div>
         </div>
