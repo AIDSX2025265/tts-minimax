@@ -39,7 +39,7 @@ export default function Home() {
   const [savedList, setSavedList] = useState<AudioItem[]>([])
   const [showSaved, setShowSaved] = useState(false)
   const [emotion, setEmotion] = useState('')
-  const [voice, setVoice] = useState('chuan_ge')
+  const [voice, setVoice] = useState('achuan_voice_003')
   const [speed, setSpeed] = useState(1)
   const [darkMode, setDarkMode] = useState(true)
   const [credits, setCredits] = useState(0)
@@ -203,7 +203,7 @@ export default function Home() {
               <div>
                 <label className={`block text-xs ${theme.textSecondary} mb-2`}>音色</label>
                 <select value={voice} onChange={(e) => setVoice(e.target.value)} className={`w-full p-3 ${theme.input} rounded-xl text-sm`}>
-                  <option value="chuan_ge">川哥</option>
+                  <option value="achuan_voice_003">川哥</option>
                 </select>
               </div>
               <div>
