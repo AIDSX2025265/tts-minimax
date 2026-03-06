@@ -8,9 +8,6 @@ const VOICES = [
   { id: 'nengliangnvzhu006', name: '能量女主' },
   { id: 'yansangdage002', name: '烟嗓大哥' },
   { id: 'achuan_voice_003', name: '中性男声' },
-  { id: 'yansangdage002', name: '烟嗓大哥' },
-  { id: 'keainvsheng001', name: '可爱女声' },
-  { id: 'nengliangnvzhu006', name: '能量女主' },
 ]
 
 const EMOTIONS = [
@@ -45,7 +42,7 @@ export default function Home() {
   const [savedList, setSavedList] = useState<AudioItem[]>([])
   const [showSaved, setShowSaved] = useState(false)
   const [emotion, setEmotion] = useState('')
-  const [voice, setVoice] = useState('achuan_voice_003')
+  const [voice, setVoice] = useState('keainvsheng001')
   const [speed, setSpeed] = useState(1)
   const [darkMode, setDarkMode] = useState(false)
   const [credits, setCredits] = useState(0)
@@ -146,7 +143,6 @@ export default function Home() {
     localStorage.setItem('savedAudios', JSON.stringify(newSaved))
   }
 
-  // 白瓷苹果风主题
   const theme = {
     bg: 'from-slate-50 via-blue-50 to-slate-100',
     card: 'bg-white border-gray-200',
@@ -173,24 +169,18 @@ export default function Home() {
               <span className={`text-xl font-bold ${theme.text}`}>大师兄的AI配音坊</span>
             </div>
             <div className="flex items-center gap-3">
-              <div className={`px-4 py-1.5 rounded-full ${darkMode ? 'bg-gray-800' : 'bg-gray-100'} border ${darkMode ? 'border-gray-700' : 'border-gray-200'}`}>
+              <div className={`px-4 py-1.5 rounded-full bg-gray-100 border border-gray-200`}>
                 <span className={`text-sm ${theme.textSecondary}`}>💰 {isTestUser ? '无限' : credits} 积分</span>
               </div>
-              <button onClick={() => setShowSaved(!showSaved)} className={`px-4 py-1.5 rounded-full text-sm ${showSaved ? `text-white bg-gradient-to-r ${theme.button}` : (darkMode ? 'bg-gray-800 text-white' : 'bg-gray-100 text-gray-700')}`}>
+              <button onClick={() => setShowSaved(!showSaved)} className={`px-4 py-1.5 rounded-full text-sm ${showSaved ? `text-white bg-gradient-to-r ${theme.button}` : 'bg-gray-100 text-gray-700'}`}>
                 {showSaved ? '📋 历史' : `⭐ ${savedList.length}`}
               </button>
-              <button onClick={toggleDarkMode} className={`p-2 rounded-full ${darkMode ? 'bg-gray-800 text-white' : 'bg-gray-100 text-gray-700'}`}>
-                {darkMode ? '☀️' : '🌙'}
-              </button>
+              <button onClick={toggleDarkMode} className="p-2 rounded-full bg-gray-100 text-gray-700">🌙</button>
               <div className={`w-8 h-8 rounded-full bg-gradient-to-r from-blue-500 to-sky-500 flex items-center justify-center text-white text-sm`}>
                 {session.user?.email?.charAt(0).toUpperCase()}
               </div>
-              <button onClick={() => signIn()} className={`px-3 py-1.5 rounded-full text-sm ${darkMode ? 'bg-gray-800 text-white' : 'bg-gray-100 text-gray-700'}`}>
-                切换
-              </button>
-              <button onClick={() => signOut()} className={`px-3 py-1.5 rounded-full text-sm ${darkMode ? 'bg-gray-800 text-white' : 'bg-gray-100 text-gray-700'}`}>
-                退出
-              </button>
+              <button onClick={() => signIn()} className="px-3 py-1.5 rounded-full text-sm bg-gray-100 text-gray-700">切换</button>
+              <button onClick={() => signOut()} className="px-3 py-1.5 rounded-full text-sm bg-gray-100 text-gray-700">退出</button>
             </div>
           </div>
         </header>
@@ -222,7 +212,7 @@ export default function Home() {
 
           <div className={`${theme.card} border rounded-2xl p-6 mb-6`}>
             <h2 className={`text-sm font-medium ${theme.textSecondary} mb-4 flex items-center gap-2`}>
-              <span className={`w-2 h-2 ${darkMode ? 'bg-blue-500' : 'bg-blue-500'} rounded-full animate-pulse`}></span>
+              <span className="w-2 h-2 bg-blue-500 rounded-full animate-pulse"></span>
               {showSaved ? '已保存的音频' : '生成语音'}
             </h2>
             {!showSaved && (
@@ -242,12 +232,12 @@ export default function Home() {
               </>
             )}
             {audioUrl && !showSaved && (
-              <div className={`mt-6 p-4 ${darkMode ? 'bg-gray-800' : 'bg-gray-50'} rounded-xl`}>
+              <div className="mt-6 p-4 bg-gray-50 rounded-xl">
                 <div className="flex items-center justify-between mb-3">
                   <span className={`text-sm ${theme.textSecondary}`}>最新生成</span>
                   <div className="flex gap-3">
-                    <button onClick={() => saveAudio({id: Date.now().toString(), text, url: audioUrl, time: new Date().toISOString()})} className={`text-sm text-blue-500`}>⭐ 保存</button>
-                    <a href={audioUrl} download="audio.mp3" className={`text-sm text-blue-500`}>📥 下载</a>
+                    <button onClick={() => saveAudio({id: Date.now().toString(), text, url: audioUrl, time: new Date().toISOString()})} className="text-sm text-blue-500">⭐ 保存</button>
+                    <a href={audioUrl} download="audio.mp3" className="text-sm text-blue-500">📥 下载</a>
                   </div>
                 </div>
                 <audio controls src={audioUrl} className="w-full h-10" />
@@ -260,7 +250,7 @@ export default function Home() {
               <h3 className={`text-sm font-medium ${theme.textSecondary} mb-4`}>{showSaved ? '已保存' : '历史记录'}</h3>
               <div className="space-y-3 max-h-80 overflow-y-auto">
                 {displayList.map((item) => (
-                  <div key={item.id} className={`flex items-center gap-4 p-4 rounded-xl ${darkMode ? 'bg-gray-800' : 'bg-gray-50'}`}>
+                  <div key={item.id} className="flex items-center gap-4 p-4 rounded-xl bg-gray-50">
                     <div className="flex-1 min-w-0">
                       <p className={`text-sm ${theme.text} truncate`}>{item.text}</p>
                       <p className={`text-xs ${theme.textSecondary}`}>{new Date(item.time).toLocaleString()}</p>
@@ -270,7 +260,7 @@ export default function Home() {
                         <button onClick={() => deleteSaved(item.id)} className={`p-2 ${theme.textSecondary}`}>🗑️</button>
                       )}
                       {!item.saved && !showSaved && (
-                        <button onClick={() => saveAudio(item)} className={`p-2 text-blue-500`}>⭐</button>
+                        <button onClick={() => saveAudio(item)} className="p-2 text-blue-500">⭐</button>
                       )}
                       <audio controls src={item.url} className="h-8 w-36" />
                     </div>
@@ -298,7 +288,7 @@ export default function Home() {
           <button onClick={() => signIn()} className={`w-full py-4 bg-gradient-to-r ${theme.button} text-white rounded-xl font-medium`}>
             立即体验
           </button>
-          <div className={`mt-6 pt-6 border-t ${darkMode ? 'border-gray-700' : 'border-gray-200'}`}>
+          <div className={`mt-6 pt-6 border-t border-gray-200`}>
             <div className="grid grid-cols-3 gap-4 text-center">
               <div><div className="text-2xl mb-1">🎤</div><p className={`${theme.textSecondary} text-xs`}>真人音色</p></div>
               <div><div className="text-2xl mb-1">⚡</div><p className={`${theme.textSecondary} text-xs`}>极速生成</p></div>
