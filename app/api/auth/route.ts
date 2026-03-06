@@ -1,10 +1,11 @@
 import { NextResponse } from 'next/server'
 
-const APP_TOKEN = 'Hu8rbDfD1aQjXPsMFLfchPlXnOe'
-const TABLE_ID = 'tblJSsNvnqUrnH1x'
-const FIELD_EMAIL = 'fldY49dbTd'
-const FIELD_PASSWORD = 'fldtjwlioG'
-const FIELD_CREDITS = 'fldTMvsnFT'
+const APP_TOKEN = 'Iqqfw5P6zindzwkIac4cpwnDnPd'
+const TABLE_ID = 'tbl21NcqSKNFghsv'
+const FIELD_EMAIL = '文本 3'
+const FIELD_PASSWORD = '文本 2'
+const FIELD_NAME = '文本'
+const FIELD_CREDITS = '积分'
 
 const APP_ID = 'cli_a915a54f0a789cb3'
 const APP_SECRET = 'XSqaFJZx1Yeie4mwaeNV9Ho6FoaFp0bK'
@@ -14,7 +15,7 @@ let tokenExpire = 0
 
 async function getAccessToken() {
   const now = Date.now()
-  if (cachedToken && tokenExpire > now + 300) {
+  if (cachedToken && tokenExpire > now + 300000) {
     return cachedToken
   }
   
@@ -39,20 +40,6 @@ async function queryUsers() {
   })
   const data = await res.json()
   return data.data?.records || []
-}
-
-async function createUser(email: string, password: string) {
-  const token = await getAccessToken()
-  await fetch(`https://open.feishu.cn/open-apis/bitable/v1/apps/${APP_TOKEN}/tables/${TABLE_ID}/records`, {
-    method: 'POST',
-    headers: { 
-      'Authorization': 'Bearer ' + token,
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify({
-      records: [{ fields: { [FIELD_EMAIL]: email, [FIELD_PASSWORD]: password, [FIELD_CREDITS]: 0 }}]
-    })
-  })
 }
 
 async function updateUserCredits(email: string, credits: number) {
@@ -94,13 +81,7 @@ export async function POST(req: Request) {
     }
     
     if (action === 'register') {
-      const records = await queryUsers()
-      const exists = records.find((r: any) => r.fields[FIELD_EMAIL] === email)
-      if (exists) {
-        return NextResponse.json({ error: '该邮箱已注册' }, { status: 400 })
-      }
-      await createUser(email, password)
-      return NextResponse.json({ success: true, user: { email, credits: 0 } })
+      return NextResponse.json({ error: '请联系管理员开通账号' }, { status: 400 })
     }
     
     if (action === 'getCredits') {
