@@ -26,7 +26,7 @@ export default function Home() {
   const [history, setHistory] = useState<{text: string, url: string, time: string}[]>([])
   const [emotion, setEmotion] = useState('')
   const [speed, setSpeed] = useState(1)
-  const [darkMode, setDarkMode] = useState(true)
+  const [darkMode, setDarkMode] = useState(false)
 
   useEffect(() => {
     const saved = localStorage.getItem('darkMode')
