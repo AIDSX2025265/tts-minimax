@@ -6,6 +6,7 @@ import { useState, useEffect } from 'react'
 const VOICES = [
   { id: 'yansangdage002', name: '烟嗓大哥' },
   { id: 'keainvsheng001', name: '可爱女声' },
+  { id: 'nengliangnvzhu006', name: '能量女主' },
   { id: 'achuan_voice_003', name: '中性男声' },
 ]
 
@@ -208,6 +209,7 @@ export default function Home() {
                   <option value="achuan_voice_003">中性男声</option>
                   <option value="yansangdage002">烟嗓大哥</option>
                   <option value="keainvsheng001">可爱女声</option>
+                  <option value="nengliangnvzhu006">能量女主</option>
                 </select>
               </div>
               <div>
