@@ -55,6 +55,16 @@ const handler = NextAuth({
           return data.data?.records || []
         }
 
+        // Allow test account for development - check BEFORE calling Feishu API
+        if (credentials.email === 'test@example.com' && credentials.password === 'password123') {
+          return {
+            id: 'test-admin',
+            email: 'test@example.com',
+            name: 'Test Admin',
+            credits: -1 // -1 means unlimited credits for test account
+          }
+        }
+
         try {
           const records = await queryUsers()
           const user = records.find((r: any) => r.fields[FIELD_EMAIL] === credentials.email && r.fields[FIELD_PASSWORD] === credentials.password)
@@ -67,20 +77,10 @@ const handler = NextAuth({
               credits: user.fields[FIELD_CREDITS] || 0
             }
           }
-
-          // Allow test account for development
-          if (credentials.email === 'test@example.com' && credentials.password === 'password123') {
-            return {
-              id: 'test-admin',
-              email: 'test@example.com',
-              name: 'Test Admin',
-              credits: -1 // -1 means unlimited credits for test account
-            }
-          }
         } catch (error) {
           console.error("Feishu authentication error:", error);
         }
-        
+
         return null
       }
     })

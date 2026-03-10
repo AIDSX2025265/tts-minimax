@@ -45,19 +45,32 @@ export default function SignIn() {
         router.push('/')
       } else { setError('注册成功，登录失败') }
     } else {
-      // Login via cloud API
-      const res = await fetch('/api/auth', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ action: 'login', email, password })
+      // Login via NextAuth to create session
+      const result = await signIn('credentials', {
+        email,
+        password,
+        redirect: false,
       })
-      const data = await res.json()
-      
-      if (data.success) {
+
+      if (result?.error) {
+        // If NextAuth fails (e.g., missing env vars), fall back to cloud API
+        const res = await fetch('/api/auth', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ action: 'login', email, password })
+        })
+        const data = await res.json()
+
+        if (data.success) {
+          localStorage.setItem('tts_email', email)
+          router.push('/')
+        } else {
+          setError(data.error || '登录失败')
+        }
+      } else {
+        // NextAuth signIn succeeded
         localStorage.setItem('tts_email', email)
         router.push('/')
-      } else {
-        setError(data.error || '登录失败')
       }
     }
     setLoading(false)
