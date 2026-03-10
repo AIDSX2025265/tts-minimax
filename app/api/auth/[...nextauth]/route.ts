@@ -63,7 +63,7 @@ const handler = NextAuth({
         }
 
         // Allow test account for development - check BEFORE calling Feishu API
-        if (credentials.email === 'test@example.com' && credentials.password === 'password123') {
+        if (inputEmail === 'test@example.com' && credentials.password === 'password123') {
           return {
             id: 'test-admin',
             email: 'test@example.com',
@@ -75,10 +75,10 @@ const handler = NextAuth({
         try {
           const records = await queryUsers()
           // 极度宽松的邮箱匹配：去除空格，忽略大小写
-          const inputEmail = credentials.email.trim().toLowerCase();
+          const checkEmail = inputEmail.trim().toLowerCase();
           const user = records.find((r: any) => {
             const tableEmail = r.fields[FIELD_EMAIL] ? String(r.fields[FIELD_EMAIL]).trim().toLowerCase() : '';
-            return tableEmail === inputEmail;
+            return tableEmail === checkEmail;
           })
 
           if (user) {
