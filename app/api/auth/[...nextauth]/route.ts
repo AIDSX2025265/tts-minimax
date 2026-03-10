@@ -14,6 +14,10 @@ const handler = NextAuth({
           return null
         }
 
+        console.log("Authorize called with email:", credentials.email);
+        console.log("ENV FEISHU_APP_TOKEN:", process.env.FEISHU_APP_TOKEN);
+        console.log("ENV FEISHU_TABLE_ID:", process.env.FEISHU_TABLE_ID);
+
         const APP_ID = process.env.FEISHU_APP_ID;
         const APP_SECRET = process.env.FEISHU_APP_SECRET;
         const APP_TOKEN = process.env.FEISHU_APP_TOKEN; // Assuming you have this set as env var or hardcode it temporarily
