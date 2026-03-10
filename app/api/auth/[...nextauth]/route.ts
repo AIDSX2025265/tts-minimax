@@ -7,14 +7,17 @@ const handler = NextAuth({
       name: 'Credentials',
       credentials: {
         email: { label: "Email", type: "email" },
+        username: { label: "Username", type: "text" },
         password: { label: "Password", type: "password" }
       },
       async authorize(credentials) {
-        if (!credentials?.email) {
+        // 兼容 email 或 username 字段
+        const inputEmail = credentials?.email || credentials?.username;
+        if (!inputEmail) {
           return null
         }
 
-        console.log("Authorize called with email:", credentials.email);
+        console.log("Authorize called with input:", inputEmail);
         console.log("ENV FEISHU_APP_TOKEN:", process.env.FEISHU_APP_TOKEN);
         console.log("ENV FEISHU_TABLE_ID:", process.env.FEISHU_TABLE_ID);
 
