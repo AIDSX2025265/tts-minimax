@@ -7,8 +7,8 @@ const FIELD_PASSWORD = '文本 2'
 const FIELD_NAME = '文本'
 const FIELD_CREDITS = '积分'
 
-const APP_ID = 'cli_a915a54f0a789cb3'
-const APP_SECRET = 'XSqaFJZx1Yeie4mwaeNV9Ho6FoaFp0bK'
+const APP_ID = process.env.FEISHU_APP_ID
+const APP_SECRET = process.env.FEISHU_APP_SECRET
 
 let cachedToken: string | null = null
 let tokenExpire = 0
