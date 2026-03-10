@@ -16,8 +16,8 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: '请输入文字' }, { status: 400 })
   }
 
-  const apiKey = 'sk-api-RSMASEzZAkfj43fn24VlWIi9s28UBbiNjacQv3eZiaBbqYFdOqRucrRhuN8-AwfIC4HT8sFrxwzYfgvTzA-sgNE9FiziHkviKXtk39jTU88ulXifCMTvCXM'
-  const groupId = '1810540818335809757'
+  const apiKey = process.env.MINIMAX_API_KEY
+  const groupId = process.env.MINIMAX_GROUP_ID
   const voiceId = voice || 'achuan_voice_003'
 
   const voiceSetting: any = {
