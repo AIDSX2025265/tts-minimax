@@ -91,7 +91,27 @@ const handler = NextAuth({
   session: {
     strategy: 'jwt'
   },
-  secret: process.env.NEXTAUTH_SECRET || 'dev-secret-change-in-prod'
+  secret: process.env.NEXTAUTH_SECRET || 'dev-secret-change-in-prod',
+  callbacks: {
+    async jwt({ token, user }) {
+      if (user) {
+        token.id = user.id;
+        token.email = user.email;
+        token.name = user.name;
+        token.credits = (user as any).credits; // 将 credits 添加到 token 中
+      }
+      return token;
+    },
+    async session({ session, token }) {
+      if (token) {
+        session.user.id = token.id;
+        session.user.email = token.email;
+        session.user.name = token.name;
+        session.user.credits = (token as any).credits; // 将 credits 添加到 session 中
+      }
+      return session;
+    }
+  }
 })
 
 export { handler as GET, handler as POST }
