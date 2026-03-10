@@ -48,7 +48,7 @@ export default function Home() {
   const [credits, setCredits] = useState(0)
 
   const charCount = text.length
-  const costCredits = Math.ceil(charCount / 100)
+  const costCredits = charCount // 1字 = 1积分，1万积分 = 1万字
 
   useEffect(() => {
     const saved = localStorage.getItem('darkMode')
@@ -71,7 +71,7 @@ export default function Home() {
     }
   }, [session])
 
-  const fetchCredits = async (email: string) => {
+  const fetchCredits = async (email: string): Promise<number> => {
     try {
       const res = await fetch('/api/auth', {
         method: 'POST',
@@ -81,10 +81,12 @@ export default function Home() {
       const data = await res.json()
       if (data.credits !== undefined) {
         setCredits(data.credits)
+        return data.credits
       }
     } catch (e) {
       console.error('Failed to fetch credits', e)
     }
+    return 0
   }
 
   const toggleDarkMode = () => {
@@ -93,45 +95,45 @@ export default function Home() {
     localStorage.setItem('darkMode', String(newMode))
   }
 
-  const deductCredits = async (amount: number) => {
-    if (!session?.user?.email) return false
-    if (session.user.email === 'test@example.com') return true
-    
-    try {
-      const res = await fetch('/api/auth', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ action: 'deductCredits', email: session.user.email, credits: amount })
-      })
-      const data = await res.json()
-      if (data.success) {
-        setCredits(data.credits)
-        return true
-      }
-    } catch (e) {
-      console.error('Failed to deduct credits', e)
-    }
-    return false
-  }
-
   const generateAudio = async () => {
     if (!text.trim()) return
-    if (costCredits > credits && session?.user?.email !== 'test@example.com') {
-      alert('积分不足！请联系管理员充值')
-      return
-    }
-    
+    const isTest = session?.user?.email === 'test@example.com'
+
     setLoading(true)
     try {
+      // 生成前实时查询飞书余额
+      if (!isTest) {
+        const latestCredits = await fetchCredits(session!.user!.email!)
+        if (costCredits > latestCredits) {
+          alert('积分不足！请联系管理员充值')
+          setLoading(false)
+          return
+        }
+
+        // 先扣积分
+        const deductRes = await fetch('/api/auth', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ action: 'deductCredits', email: session!.user!.email, credits: costCredits })
+        })
+        const deductData = await deductRes.json()
+        if (!deductData.success) {
+          alert(deductData.error || '积分扣除失败')
+          setLoading(false)
+          return
+        }
+        setCredits(deductData.credits)
+      }
+
+      // 调用 TTS 生成
       const res = await fetch('/api/tts', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ text, voice, emotion, speed })
       })
       const data = await res.json()
+
       if (data.audio_url) {
-        if (session?.user?.email !== 'test@example.com') deductCredits(costCredits)
-        
         const newItem: AudioItem = {
           id: Date.now().toString(),
           text,
@@ -142,9 +144,27 @@ export default function Home() {
         setAudioUrl(data.audio_url)
         setHistory([newItem, ...history])
       } else {
+        // 生成失败，退回积分
+        if (!isTest) {
+          await fetch('/api/auth', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ action: 'addCredits', email: session!.user!.email, credits: costCredits })
+          })
+          setCredits(prev => prev + costCredits)
+        }
         alert(data.error || '生成失败')
       }
     } catch (e) {
+      // 网络异常，退回积分
+      if (!isTest) {
+        await fetch('/api/auth', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ action: 'addCredits', email: session!.user!.email, credits: costCredits })
+        })
+        setCredits(prev => prev + costCredits)
+      }
       alert('生成失败')
     }
     setLoading(false)
@@ -245,7 +265,7 @@ export default function Home() {
                   <div className="flex items-center gap-4">
                     <span className={`text-sm ${theme.textSecondary}`}>{charCount} 字符</span>
                     {charCount > 0 && (
-                      <span className={`text-sm ${theme.textSecondary}`}>💰 {costCredits} 积分 (100积分=10000字符)</span>
+                      <span className={`text-sm ${theme.textSecondary}`}>💰 {costCredits} 积分 (1积分=1字)</span>
                     )}
                   </div>
                   <button onClick={generateAudio} disabled={loading || !text.trim()} className={`px-8 py-3 bg-gradient-to-r ${theme.button} text-white rounded-xl text-sm font-medium disabled:opacity-50`}>
@@ -315,7 +335,7 @@ export default function Home() {
             <div className="grid grid-cols-3 gap-4 text-center">
               <div><div className="text-2xl mb-1">🎤</div><p className={`${theme.textSecondary} text-xs`}>真人音色</p></div>
               <div><div className="text-2xl mb-1">⚡</div><p className={`${theme.textSecondary} text-xs`}>极速生成</p></div>
-              <div><div className="text-2xl mb-1">💎</div><p className={`${theme.textSecondary} text-xs`}>100积分=1万字</p></div>
+              <div><div className="text-2xl mb-1">💎</div><p className={`${theme.textSecondary} text-xs`}>1积分=1字</p></div>
             </div>
           </div>
         </div>

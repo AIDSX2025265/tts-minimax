@@ -107,7 +107,7 @@ const handler = NextAuth({
                 id: user.record_id,
                 email: extractFieldValue(user.fields[FIELD_EMAIL]),
                 name: extractFieldValue(user.fields[FIELD_NAME]),
-                credits: user.fields[FIELD_CREDITS] || 0
+                credits: Number(extractFieldValue(user.fields[FIELD_CREDITS])) || 0
               }
             } else {
               console.log("Password mismatch for user:", inputEmail);
