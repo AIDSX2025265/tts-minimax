@@ -10,14 +10,77 @@ const handler = NextAuth({
         password: { label: "Password", type: "password" }
       },
       async authorize(credentials) {
-        // 简单演示：允许任何邮箱注册登录
-        if (credentials?.email && credentials?.password) {
-          return { 
-            id: credentials.email, 
-            email: credentials.email, 
-            name: credentials.email.split('@')[0] 
-          }
+        if (!credentials?.email || !credentials?.password) {
+          return null
         }
+
+        const APP_ID = process.env.FEISHU_APP_ID;
+        const APP_SECRET = process.env.FEISHU_APP_SECRET;
+        const APP_TOKEN = process.env.FEISHU_APP_TOKEN; // Assuming you have this set as env var or hardcode it temporarily
+        const TABLE_ID = process.env.FEISHU_TABLE_ID; // Assuming you have this set as env var or hardcode it temporarily
+        const FIELD_EMAIL = '文本 3'; // Assuming your email field name is '文本 3'
+        const FIELD_PASSWORD = '文本 2'; // Assuming your password field name is '文本 2'
+        const FIELD_NAME = '文本'; // Assuming your name field is '文本'
+        const FIELD_CREDITS = '积分'; // Assuming your credits field is '积分'
+
+        let cachedToken: string | null = null
+        let tokenExpire = 0
+
+        async function getAccessToken() {
+          const now = Date.now()
+          if (cachedToken && tokenExpire > now + 300000) {
+            return cachedToken
+          }
+          
+          const res = await fetch('https://open.feishu.cn/open-apis/auth/v3/tenant_access_token/internal', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ app_id: APP_ID, app_secret: APP_SECRET })
+          })
+          const data = await res.json()
+          if (data.tenant_access_token) {
+            cachedToken = data.tenant_access_token
+            tokenExpire = now + (data.expire - 300) * 1000
+            return cachedToken
+          }
+          throw new Error('Failed to get access token')
+        }
+
+        async function queryUsers() {
+          const token = await getAccessToken()
+          const res = await fetch(`https://open.feishu.cn/open-apis/bitable/v1/apps/${APP_TOKEN}/tables/${TABLE_ID}/records?page_size=100`, {
+            headers: { 'Authorization': 'Bearer ' + token }
+          })
+          const data = await res.json()
+          return data.data?.records || []
+        }
+
+        try {
+          const records = await queryUsers()
+          const user = records.find((r: any) => r.fields[FIELD_EMAIL] === credentials.email && r.fields[FIELD_PASSWORD] === credentials.password)
+
+          if (user) {
+            return {
+              id: user.record_id, // Use record_id as user id
+              email: user.fields[FIELD_EMAIL],
+              name: user.fields[FIELD_NAME],
+              credits: user.fields[FIELD_CREDITS] || 0
+            }
+          }
+
+          // Allow test account for development
+          if (credentials.email === 'test@example.com' && credentials.password === 'password123') {
+            return {
+              id: 'test-admin',
+              email: 'test@example.com',
+              name: 'Test Admin',
+              credits: -1 // -1 means unlimited credits for test account
+            }
+          }
+        } catch (error) {
+          console.error("Feishu authentication error:", error);
+        }
+        
         return null
       }
     })
