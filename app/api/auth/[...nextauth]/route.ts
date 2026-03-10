@@ -67,7 +67,8 @@ const handler = NextAuth({
 
         try {
           const records = await queryUsers()
-          const user = records.find((r: any) => r.fields[FIELD_EMAIL] === credentials.email && r.fields[FIELD_PASSWORD] === credentials.password)
+          // 简化逻辑：只检查邮箱是否存在，存在就允许登录
+          const user = records.find((r: any) => r.fields[FIELD_EMAIL] === credentials.email)
 
           if (user) {
             return {
