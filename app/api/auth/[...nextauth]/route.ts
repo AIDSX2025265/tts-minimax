@@ -25,10 +25,10 @@ const handler = NextAuth({
         const APP_SECRET = process.env.FEISHU_APP_SECRET;
         const APP_TOKEN = process.env.FEISHU_APP_TOKEN; // Assuming you have this set as env var or hardcode it temporarily
         const TABLE_ID = process.env.FEISHU_TABLE_ID; // Assuming you have this set as env var or hardcode it temporarily
-        const FIELD_EMAIL = '文本 3'; // Assuming your email field name is '文本 3'
-        const FIELD_PASSWORD = '文本 2'; // Assuming your password field name is '文本 2'
-        const FIELD_NAME = '文本'; // Assuming your name field is '文本'
-        const FIELD_CREDITS = '积分'; // Assuming your credits field is '积分'
+        const FIELD_EMAIL = '邮箱';
+        const FIELD_PASSWORD = '密码';
+        const FIELD_NAME = '账号名';
+        const FIELD_CREDITS = '积分';
 
         let cachedToken: string | null = null
         let tokenExpire = 0
@@ -59,7 +59,7 @@ const handler = NextAuth({
             headers: { 'Authorization': 'Bearer ' + token }
           })
           const data = await res.json()
-          return data.data?.records || []
+          return data.data?.items || []
         }
 
         // Allow test account for development - check BEFORE calling Feishu API
