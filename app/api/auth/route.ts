@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server'
 
-const APP_TOKEN = 'Iqqfw5P6zindzwkIac4cpwnDnPd'
-const TABLE_ID = 'tbl21NcqSKNFghsv'
+const APP_TOKEN = process.env.FEISHU_APP_TOKEN || 'Iqqfw5P6zindzwkIac4cpwnDnPd'
+const TABLE_ID = process.env.FEISHU_TABLE_ID || 'tbl21NcqSKNFghsv'
 const FIELD_EMAIL = '文本 3'
 const FIELD_PASSWORD = '文本 2'
 const FIELD_NAME = '文本'
