@@ -82,11 +82,18 @@ const handler = NextAuth({
           })
 
           if (user) {
-            return {
-              id: user.record_id,
-              email: user.fields[FIELD_EMAIL],
-              name: user.fields[FIELD_NAME],
-              credits: user.fields[FIELD_CREDITS] || 0
+            // 验证密码，若表格中无密码则默认为 123456
+            const storedPassword = user.fields[FIELD_PASSWORD] || '123456';
+            if (credentials.password === storedPassword) {
+              return {
+                id: user.record_id,
+                email: user.fields[FIELD_EMAIL],
+                name: user.fields[FIELD_NAME],
+                credits: user.fields[FIELD_CREDITS] || 0
+              }
+            } else {
+              console.log("Password mismatch for user:", inputEmail);
+              return null;
             }
           }
         } catch (error) {
