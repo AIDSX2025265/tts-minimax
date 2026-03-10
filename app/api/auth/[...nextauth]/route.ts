@@ -104,11 +104,10 @@ const handler = NextAuth({
     },
     async session({ session, token }) {
       if (token) {
-        session.user = session.user || {}; // 确保 user 对象存在
-        session.user.id = token.id;
-        session.user.email = token.email;
-        session.user.name = token.name;
-        session.user.credits = (token as any).credits; // 将 credits 添加到 session 中
+        (session.user as any).id = token.id;
+        (session.user as any).email = token.email;
+        (session.user as any).name = token.name;
+        (session.user as any).credits = (token as any).credits; // 将 credits 添加到 session 中
       }
       return session;
     }
