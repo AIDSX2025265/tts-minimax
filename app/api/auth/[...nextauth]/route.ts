@@ -67,12 +67,16 @@ const handler = NextAuth({
 
         try {
           const records = await queryUsers()
-          // 简化逻辑：只检查邮箱是否存在，存在就允许登录
-          const user = records.find((r: any) => r.fields[FIELD_EMAIL] === credentials.email)
+          // 极度宽松的邮箱匹配：去除空格，忽略大小写
+          const inputEmail = credentials.email.trim().toLowerCase();
+          const user = records.find((r: any) => {
+            const tableEmail = r.fields[FIELD_EMAIL] ? String(r.fields[FIELD_EMAIL]).trim().toLowerCase() : '';
+            return tableEmail === inputEmail;
+          })
 
           if (user) {
             return {
-              id: user.record_id, // Use record_id as user id
+              id: user.record_id,
               email: user.fields[FIELD_EMAIL],
               name: user.fields[FIELD_NAME],
               credits: user.fields[FIELD_CREDITS] || 0
