@@ -104,6 +104,7 @@ const handler = NextAuth({
     },
     async session({ session, token }) {
       if (token) {
+        session.user = session.user || {}; // 确保 user 对象存在
         session.user.id = token.id;
         session.user.email = token.email;
         session.user.name = token.name;
