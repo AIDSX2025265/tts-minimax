@@ -72,29 +72,49 @@ const handler = NextAuth({
           }
         }
 
+        // 辅助函数：提取飞书字段值（处理数组和字符串格式）
+        function extractFieldValue(field: any): string {
+          if (!field) return '';
+          if (typeof field === 'string') return field;
+          if (Array.isArray(field) && field.length > 0) {
+            // 飞书富文本格式: [{"type": "text", "text": "xxx"}]
+            if (field[0]?.text) return field[0].text;
+            return String(field[0]);
+          }
+          return String(field);
+        }
+
         try {
           const records = await queryUsers()
+          console.log("Total records fetched:", records.length);
+
           // 极度宽松的邮箱匹配：去除空格，忽略大小写
           const checkEmail = inputEmail.trim().toLowerCase();
           const user = records.find((r: any) => {
-            const tableEmail = r.fields[FIELD_EMAIL] ? String(r.fields[FIELD_EMAIL]).trim().toLowerCase() : '';
+            const tableEmail = extractFieldValue(r.fields[FIELD_EMAIL]).trim().toLowerCase();
+            console.log("Comparing:", tableEmail, "with", checkEmail);
             return tableEmail === checkEmail;
           })
 
           if (user) {
+            console.log("User found:", user.record_id);
             // 验证密码，若表格中无密码则默认为 123456
-            const storedPassword = user.fields[FIELD_PASSWORD] || '123456';
+            const storedPassword = extractFieldValue(user.fields[FIELD_PASSWORD]) || '123456';
+            console.log("Stored password:", storedPassword, "Input password:", credentials.password);
+
             if (credentials.password === storedPassword) {
               return {
                 id: user.record_id,
-                email: user.fields[FIELD_EMAIL],
-                name: user.fields[FIELD_NAME],
+                email: extractFieldValue(user.fields[FIELD_EMAIL]),
+                name: extractFieldValue(user.fields[FIELD_NAME]),
                 credits: user.fields[FIELD_CREDITS] || 0
               }
             } else {
               console.log("Password mismatch for user:", inputEmail);
               return null;
             }
+          } else {
+            console.log("User not found in records");
           }
         } catch (error) {
           console.error("Feishu authentication error:", error);
