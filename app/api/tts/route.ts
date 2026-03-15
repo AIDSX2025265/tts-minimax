@@ -18,7 +18,7 @@ export async function POST(req: Request) {
 
   const apiKey = process.env.MINIMAX_API_KEY
   const groupId = process.env.MINIMAX_GROUP_ID
-  const voiceId = voice || 'achuan_voice_003'
+  const voiceId = voice || 'keainvsheng001'
 
   const voiceSetting: any = {
     voice_id: voiceId,
