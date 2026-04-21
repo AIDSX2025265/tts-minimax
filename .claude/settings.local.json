@@ -1,0 +1,17 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(git push)",
+      "Bash(git config --global --get http.proxy)",
+      "Bash(git config --global --get https.proxy)",
+      "Bash(git config --global http.proxy http://127.0.0.1:7897)",
+      "Bash(git config --global https.proxy http://127.0.0.1:7897)"
+    ]
+  },
+  "enableAllProjectMcpServers": true,
+  "enabledMcpjsonServers": [
+    "playwright"
+  ]
+}
