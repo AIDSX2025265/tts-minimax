@@ -12,7 +12,11 @@
       "Bash(echo \"FEISHU_APP_ID: $FEISHU_APP_ID\")",
       "Bash(echo \"FEISHU_APP_SECRET: $FEISHU_APP_SECRET:0:10...\")",
       "Bash(echo:*)",
-      "Bash(echo \"FEISHU_TABLE_ID: $FEISHU_TABLE_ID\")"
+      "Bash(echo \"FEISHU_TABLE_ID: $FEISHU_TABLE_ID\")",
+      "mcp__playwright__browser_navigate",
+      "WebFetch(domain:tts-minimax.vercel.app)",
+      "Bash(curl -s -X POST 'https://tts-minimax.vercel.app/api/auth' -H 'Content-Type: application/json' -d '{\"\"action\"\":\"\"debugFeishu\"\"}')",
+      "Bash(curl:*)"
     ]
   },
   "enableAllProjectMcpServers": true,

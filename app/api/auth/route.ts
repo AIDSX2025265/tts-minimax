@@ -132,6 +132,26 @@ export async function POST(req: Request) {
       })
     }
 
+    if (action === 'login') {
+      const records = await queryUsers()
+      const user = records.find((r: any) =>
+        extractFieldValue(r.fields[FIELD_EMAIL]).trim().toLowerCase() === email.trim().toLowerCase()
+      )
+      if (!user) return NextResponse.json({ success: false, error: '用户不存在' }, { status: 400 })
+
+      const storedPassword = extractFieldValue(user.fields[FIELD_PASSWORD]) || '123456'
+      if (password !== storedPassword) {
+        return NextResponse.json({ success: false, error: '密码错误' }, { status: 400 })
+      }
+
+      return NextResponse.json({
+        success: true,
+        email: extractFieldValue(user.fields[FIELD_EMAIL]),
+        name: extractFieldValue(user.fields[FIELD_NAME]),
+        credits: Number(extractFieldValue(user.fields[FIELD_CREDITS])) || 0
+      })
+    }
+
     return NextResponse.json({ error: '未知操作' }, { status: 400 })
   } catch (err) {
     return NextResponse.json({ error: String(err) }, { status: 500 })
