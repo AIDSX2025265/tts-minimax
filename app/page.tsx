@@ -4,6 +4,7 @@ import { signIn, signOut, useSession } from 'next-auth/react'
 import { useState, useEffect } from 'react'
 
 const MALE_VOICES = [
+  { id: 'achuan_voice_003', name: '温暖男声', preview: '/previews/achuan_voice_003.mp3' },
   { id: 'yansangdage002', name: '烟嗓大哥', preview: '/previews/yansangdage002.mp3' },
   { id: 'ywyj_001', name: '一网一家', preview: '/previews/ywyj_001.mp3' },
   { id: 'dcnzy_003', name: '低沉男中', preview: '/previews/dcnzy_003.mp3' },
@@ -49,7 +50,7 @@ export default function Home() {
   const [savedList, setSavedList] = useState<AudioItem[]>([])
   const [showSaved, setShowSaved] = useState(false)
   const [emotion, setEmotion] = useState('')
-  const [voice, setVoice] = useState('keainvsheng001')
+  const [voice, setVoice] = useState('achuan_voice_003')
   const [voiceType, setVoiceType] = useState<'male' | 'female'>('female')
   const [speed, setSpeed] = useState(1)
   const [credits, setCredits] = useState(0)
@@ -517,7 +518,7 @@ export default function Home() {
             <div className="grid grid-cols-3 gap-6 text-center">
               <div>
                 <div className="text-3xl mb-2">🎤</div>
-                <p className="text-cyan-400 text-xs font-bold tracking-wider">8种音色</p>
+                <p className="text-cyan-400 text-xs font-bold tracking-wider">9种音色</p>
               </div>
               <div>
                 <div className="text-3xl mb-2">⚡</div>
