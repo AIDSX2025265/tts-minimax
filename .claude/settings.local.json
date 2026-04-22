@@ -7,7 +7,12 @@
       "Bash(git config --global --get http.proxy)",
       "Bash(git config --global --get https.proxy)",
       "Bash(git config --global http.proxy http://127.0.0.1:7897)",
-      "Bash(git config --global https.proxy http://127.0.0.1:7897)"
+      "Bash(git config --global https.proxy http://127.0.0.1:7897)",
+      "Bash(curl -s -X POST 'https://open.feishu.cn/open-apis/auth/v3/tenant_access_token/internal'  -H 'Content-Type: application/json'  -d '{\"\"app_id\"\":\"\"'\"$FEISHU_APP_ID\"'\"\", \"\"app_secret\"\":\"\"'\"$FEISHU_APP_SECRET\"'\"\"}')",
+      "Bash(echo \"FEISHU_APP_ID: $FEISHU_APP_ID\")",
+      "Bash(echo \"FEISHU_APP_SECRET: $FEISHU_APP_SECRET:0:10...\")",
+      "Bash(echo:*)",
+      "Bash(echo \"FEISHU_TABLE_ID: $FEISHU_TABLE_ID\")"
     ]
   },
   "enableAllProjectMcpServers": true,

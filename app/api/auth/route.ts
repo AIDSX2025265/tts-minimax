@@ -120,6 +120,18 @@ export async function POST(req: Request) {
       return NextResponse.json({ users })
     }
 
+    if (action === 'debugFeishu') {
+      const records = await queryUsers()
+      return NextResponse.json({
+        total: records.length,
+        fields: records.length > 0 ? Object.keys(records[0].fields) : [],
+        sample: records.length > 0 ? {
+          record_id: records[0].record_id,
+          fields: records[0].fields
+        } : null
+      })
+    }
+
     return NextResponse.json({ error: '未知操作' }, { status: 400 })
   } catch (err) {
     return NextResponse.json({ error: String(err) }, { status: 500 })
