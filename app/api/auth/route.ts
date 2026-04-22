@@ -45,11 +45,24 @@ async function getAccessToken() {
 
 async function queryUsers() {
   const token = await getAccessToken()
-  const res = await fetch(`https://open.feishu.cn/open-apis/bitable/v1/apps/${APP_TOKEN}/tables/${TABLE_ID}/records?page_size=100`, {
-    headers: { 'Authorization': 'Bearer ' + token }
-  })
-  const data = await res.json()
-  return data.data?.items || []
+  let allRecords: any[] = []
+  let pageToken: string | null = null
+
+  do {
+    let url = `https://open.feishu.cn/open-apis/bitable/v1/apps/${APP_TOKEN}/tables/${TABLE_ID}/records?page_size=100`
+    if (pageToken) url += `&page_token=${pageToken}`
+
+    const res = await fetch(url, {
+      headers: { 'Authorization': 'Bearer ' + token }
+    })
+    const data = await res.json()
+    if (data.data?.items) {
+      allRecords.push(...data.data.items)
+    }
+    pageToken = data.data?.page_token || null
+  } while (pageToken)
+
+  return allRecords
 }
 
 async function updateUserCredits(recordId: string, credits: number) {
