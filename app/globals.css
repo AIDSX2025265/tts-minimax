@@ -3,97 +3,60 @@
 @tailwind utilities;
 
 :root {
-  --foreground: #e4e4e7;
-  --background: #0a0a0f;
-  --neon-orange: #ff6b35;
-  --neon-red: #ff4500;
-  --card-bg: #1a1a2e;
-  --border: #2a2a3e;
+  --foreground: #1f1e1d;
+  --muted: #6b6862;
+  --background: #faf9f5;     /* Claude 官网奶油底 */
+  --surface: #ffffff;        /* 卡片白 */
+  --surface-2: #f3efe7;      /* 次级面板 */
+  --border: #e7e2d6;         /* 低对比米色边 */
+  --border-strong: #d6cfbf;
+  --accent: #c96442;         /* Claude 橙 */
+  --accent-hover: #b3563a;
+  --accent-soft: #f4e4d9;
 }
 
-* {
-  box-sizing: border-box;
-}
+* { box-sizing: border-box; }
 
-body {
+html, body {
   color: var(--foreground);
   background: var(--background);
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+  font-feature-settings: "ss01", "cv01";
+  -webkit-font-smoothing: antialiased;
 }
 
-/* Custom scrollbar */
-::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
+.font-serif-display {
+  font-family: "Tiempos Headline", "Source Serif Pro", "Noto Serif SC", ui-serif, Georgia, "Times New Roman", serif;
+  letter-spacing: -0.01em;
 }
 
-::-webkit-scrollbar-track {
-  background: rgba(26, 26, 46, 0.5);
-}
+/* Scrollbar */
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #d6cfbf; border-radius: 8px; }
+::-webkit-scrollbar-thumb:hover { background: #b8b0a0; }
 
-::-webkit-scrollbar-thumb {
-  background: rgba(255, 107, 53, 0.4);
-  border-radius: 3px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: rgba(255, 107, 53, 0.7);
-}
-
-/* Audio player styling */
+/* Audio player – 中性外观 */
 audio {
-  filter: hue-rotate(20deg) saturate(1.2);
+  width: 100%;
 }
-
 audio::-webkit-media-controls-panel {
-  background: linear-gradient(180deg, #1a1a2e 0%, #0a0a0f 100%);
+  background: #f3efe7;
 }
 
-audio::-webkit-media-controls-play-button,
-audio::-webkit-media-controls-mute-button {
-  background-color: rgba(255, 107, 53, 0.6);
-  border-radius: 50%;
-}
-
-audio::-webkit-media-controls-timeline-container {
-  background-color: rgba(255, 107, 53, 0.2);
-}
-
-audio::-webkit-media-controls-current-time-display,
-audio::-webkit-media-controls-time-remaining-display {
-  color: #ff6b35;
-  font-size: 11px;
-}
-
-/* Select dropdown styling */
+/* Select 下拉箭头 */
 select {
   appearance: none;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23ff6b35' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%231f1e1d' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
   background-repeat: no-repeat;
-  background-position: right 12px center;
-  padding-right: 36px;
+  background-position: right 14px center;
+  padding-right: 38px;
 }
 
-select option {
-  background: #1a1a2e;
-  color: #e4e4e7;
-}
-
-/* Animation for neon glow pulse */
-@keyframes neon-pulse {
-  0%, 100% {
-    box-shadow: 0 0 10px rgba(255, 107, 53, 0.5);
-  }
-  50% {
-    box-shadow: 0 0 25px rgba(255, 107, 53, 0.8), 0 0 40px rgba(255, 69, 0, 0.4);
-  }
-}
-
-.neon-glow {
-  animation: neon-pulse 2s ease-in-out infinite;
-}
-
-/* Smooth transitions */
 button, a, select, input, textarea {
-  transition: all 0.2s ease;
+  transition: background-color .15s ease, border-color .15s ease, color .15s ease, box-shadow .15s ease;
+}
+
+textarea:focus, select:focus, input:focus {
+  outline: none;
 }
