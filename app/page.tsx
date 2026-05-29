@@ -346,7 +346,6 @@ export default function Home() {
                 />
                 <div className="flex justify-between items-center mt-4">
                   <div className="flex items-center gap-4 text-sm text-[#6b6862]">
-                    <span>{charCount} 字符</span>
                     {charCount > 0 && (
                       <span className="text-[#c96442]">需 {costCredits} 积分</span>
                     )}
