@@ -350,8 +350,8 @@ export default function Home() {
                     {charCount > 0 && (
                       <span className="text-[#c96442]">需 {costCredits} 积分</span>
                     )}
-                    <span className="text-xs text-[#a8a298]" title="speech-2.6-hd 最新高清模型，单字消耗 1.5 积分">
-                      高清模型 · 1.5 积分/字
+                    <span className="text-xs text-[#a8a298]" title="MiniMax speech-2.6-hd 旗舰引擎 · 极速高清音质合成">
+                      极速高清 · MiniMax 旗舰引擎
                     </span>
                   </div>
                   <button
