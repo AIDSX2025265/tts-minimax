@@ -56,8 +56,8 @@ export default function Home() {
   const [credits, setCredits] = useState(0)
   const [playingVoice, setPlayingVoice] = useState<string | null>(null)
 
-  // 使用 speech-2.6-hd 最新高清模型，单字消耗 1.5 积分
-  const COST_RATE = 1.5
+  // 使用 speech-2.6-hd 最新高清模型，单字消耗 1.3 积分
+  const COST_RATE = 1.3
   const charCount = text.length
   const costCredits = Math.ceil(charCount * COST_RATE)
 
