@@ -56,8 +56,10 @@ export default function Home() {
   const [credits, setCredits] = useState(0)
   const [playingVoice, setPlayingVoice] = useState<string | null>(null)
 
+  // 使用 speech-2.6-hd 最新高清模型，单字消耗 1.5 积分
+  const COST_RATE = 1.5
   const charCount = text.length
-  const costCredits = charCount
+  const costCredits = Math.ceil(charCount * COST_RATE)
 
   useEffect(() => {
     const savedAudios = localStorage.getItem('savedAudios')
@@ -348,6 +350,9 @@ export default function Home() {
                     {charCount > 0 && (
                       <span className="text-[#c96442]">需 {costCredits} 积分</span>
                     )}
+                    <span className="text-xs text-[#a8a298]" title="speech-2.6-hd 最新高清模型，单字消耗 1.5 积分">
+                      高清模型 · 1.5 积分/字
+                    </span>
                   </div>
                   <button
                     onClick={generateAudio}
@@ -409,7 +414,7 @@ export default function Home() {
           )}
 
           <footer className="text-center text-xs text-[#a8a298] mt-12 pb-6">
-            大师兄的 AI 配音坊 · 1 字 1 积分
+            大师兄的 AI 配音坊 · 使用 speech-2.6-hd 最新高清模型
           </footer>
         </main>
       </div>
@@ -451,8 +456,8 @@ export default function Home() {
                 <p className="text-xs text-[#6b6862] mt-1">生成速度</p>
               </div>
               <div>
-                <p className="font-serif-display text-xl text-[#1f1e1d]">1:1</p>
-                <p className="text-xs text-[#6b6862] mt-1">字符积分</p>
+                <p className="font-serif-display text-xl text-[#1f1e1d]">HD</p>
+                <p className="text-xs text-[#6b6862] mt-1">最新模型</p>
               </div>
             </div>
           </div>

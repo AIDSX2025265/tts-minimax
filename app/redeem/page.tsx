@@ -35,33 +35,109 @@ export default function Redeem() {
       localStorage.setItem('tts_users', JSON.stringify(users))
     }
 
-    setResult({ success: true, message: `兑换成功！+${codes[codeIndex].credits}积分` })
+    setResult({ success: true, message: `兑换成功！+${codes[codeIndex].credits} 积分` })
     setLoading(false)
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-slate-100 flex items-center justify-center p-6">
-      <div className="max-w-md w-full">
-        <div className="bg-white border border-gray-200 rounded-2xl p-8">
-          <h1 className="text-2xl font-bold text-white text-center mb-2">兑换积分</h1>
-          <p className="text-gray-600 text-center mb-6">输入兑换码兑换积分</p>
-          
-          <input type="text" placeholder="请输入兑换码" value={code} onChange={(e) => setCode(e.target.value.toUpperCase())} className="w-full p-4 bg-white border border-gray-300 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-blue-400 mb-4 text-center text-lg font-mono" />
+    <div className="min-h-screen bg-[#faf9f5] flex items-center justify-center p-6 text-[#1f1e1d]">
+      <div className="max-w-sm w-full">
+        {/* Logo + 标题 */}
+        <div className="text-center mb-10">
+          <div className="w-14 h-14 rounded-xl bg-[#c96442] flex items-center justify-center mx-auto mb-6">
+            <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+          </div>
+          <h1 className="font-serif-display text-3xl font-medium tracking-tight mb-2">
+            兑换 <span className="text-[#c96442]">积分</span>
+          </h1>
+          <p className="text-[#6b6862] text-sm">
+            输入兑换码，立即增加积分
+          </p>
+        </div>
 
-          <button onClick={redeem} disabled={loading || !session} className="w-full py-4 bg-gradient-to-r from-blue-500 to-sky-500 text-white rounded-xl font-medium disabled:opacity-50">
-            {loading ? '兑换中...' : '立即兑换'}
-          </button>
-
-          {result.message && (
-            <div className={`mt-4 p-4 rounded-xl text-center ${result.success ? 'bg-blue-50 border border-blue-400 text-gray-600' : 'bg-red-600/20 border border-red-500 text-red-400'}`}>
-              {result.message}
+        {/* 表单卡片 */}
+        <div className="bg-white rounded-2xl border border-[#e7e2d6] p-8">
+          {/* 当前账号 */}
+          {session?.user?.email && (
+            <div className="mb-5 pb-5 border-b border-[#e7e2d6]">
+              <p className="text-xs text-[#6b6862] mb-1">当前账号</p>
+              <p className="text-sm text-[#1f1e1d] font-medium">{session.user.email}</p>
             </div>
           )}
 
-          {!session && <p className="text-yellow-400 text-center mt-4 text-sm">请先登录后再兑换</p>}
+          {/* 输入区 */}
+          <div className="space-y-5">
+            <div>
+              <label className="block text-xs font-medium text-[#6b6862] mb-2">兑换码</label>
+              <input
+                type="text"
+                placeholder="请输入兑换码"
+                value={code}
+                onChange={(e) => setCode(e.target.value.toUpperCase())}
+                className="w-full px-4 py-3 bg-[#faf9f5] border border-[#e7e2d6] rounded-lg text-[16px] text-[#1f1e1d] placeholder-[#a8a298] focus:border-[#c96442] focus:outline-none transition text-center font-mono tracking-wider"
+                disabled={!session}
+              />
+            </div>
 
-          <button onClick={() => router.push('/')} className="w-full mt-4 py-3 text-gray-600 hover:text-gray-700">返回首页</button>
+            <button
+              onClick={redeem}
+              disabled={loading || !session || !code.trim()}
+              className="w-full py-3 bg-[#c96442] text-white rounded-full font-medium text-[15px] disabled:opacity-40 disabled:cursor-not-allowed hover:bg-[#b3563a] transition"
+            >
+              {loading ? (
+                <span className="flex items-center justify-center gap-2">
+                  <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24">
+                    <circle className="opacity-30" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
+                    <path className="opacity-90" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                  </svg>
+                  兑换中…
+                </span>
+              ) : '立即兑换'}
+            </button>
+          </div>
+
+          {/* 兑换结果 */}
+          {result.message && (
+            <div
+              className={`mt-5 p-3 rounded-lg text-sm text-center border ${
+                result.success
+                  ? 'bg-[#f4e4d9] border-[#c96442]/40 text-[#c96442]'
+                  : 'bg-[#faf6ee] border-[#e7e2d6] text-[#6b6862]'
+              }`}
+            >
+              {result.success ? '✓ ' : '✗ '}{result.message}
+            </div>
+          )}
+
+          {/* 未登录提示 */}
+          {!session && (
+            <div className="mt-5 pt-5 border-t border-[#e7e2d6] text-center">
+              <p className="text-xs text-[#a8a298] mb-3">需要先登录才能兑换</p>
+              <button
+                onClick={() => signIn()}
+                className="text-sm text-[#c96442] hover:text-[#b3563a] font-medium"
+              >
+                立即登录 →
+              </button>
+            </div>
+          )}
         </div>
+
+        {/* 返回首页 */}
+        <button
+          onClick={() => router.push('/')}
+          className="w-full mt-4 py-2 text-xs text-[#a8a298] hover:text-[#6b6862] transition"
+        >
+          ← 返回首页
+        </button>
+
+        {/* 底部 footer */}
+        <p className="text-center text-xs text-[#a8a298] mt-8">
+          基于 MiniMax speech-2.6-hd 最新高清引擎
+        </p>
       </div>
     </div>
   )
