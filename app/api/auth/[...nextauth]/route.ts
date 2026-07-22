@@ -23,8 +23,8 @@ const handler = NextAuth({
 
         const APP_ID = process.env.FEISHU_APP_ID;
         const APP_SECRET = process.env.FEISHU_APP_SECRET;
-        const APP_TOKEN = process.env.FEISHU_APP_TOKEN; // Assuming you have this set as env var or hardcode it temporarily
-        const TABLE_ID = process.env.FEISHU_TABLE_ID; // Assuming you have this set as env var or hardcode it temporarily
+        const APP_TOKEN = 'JhA1whlyBiVg7nkaJxzcqyk3nYf';
+        const TABLE_ID = 'tblUkpm8W8KFEZZc';
         const FIELD_EMAIL = '邮箱';
         const FIELD_PASSWORD = '密码';
         const FIELD_NAME = '账号名';

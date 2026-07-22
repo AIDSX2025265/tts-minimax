@@ -1,8 +1,8 @@
 import { NextResponse } from 'next/server'
 
-const APP_TOKEN = 'Iqqfw5P6zindzwkIac4cpwnDnPd'
-const TABLE_ID = 'tbl21NcqSKNFghsv'
-const FIELD_EMAIL = '文本 3'
+const APP_TOKEN = 'JhA1whlyBiVg7nkaJxzcqyk3nYf'
+const TABLE_ID = 'tblUkpm8W8KFEZZc'
+const FIELD_EMAIL = '邮箱'
 const FIELD_CREDITS = '积分'
 
 const APP_ID = 'cli_a915a54f0a789cb3'

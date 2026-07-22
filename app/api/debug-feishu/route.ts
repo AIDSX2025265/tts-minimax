@@ -3,8 +3,8 @@ import { NextResponse } from 'next/server'
 export async function GET() {
   const APP_ID = process.env.FEISHU_APP_ID;
   const APP_SECRET = process.env.FEISHU_APP_SECRET;
-  const APP_TOKEN = process.env.FEISHU_APP_TOKEN;
-  const TABLE_ID = process.env.FEISHU_TABLE_ID;
+  const APP_TOKEN = 'JhA1whlyBiVg7nkaJxzcqyk3nYf';
+  const TABLE_ID = 'tblUkpm8W8KFEZZc';
 
   try {
     // 获取 access token

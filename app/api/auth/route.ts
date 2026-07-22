@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server'
 
-const APP_TOKEN = process.env.FEISHU_APP_TOKEN || 'Iqqfw5P6zindzwkIac4cpwnDnPd'
-const TABLE_ID = process.env.FEISHU_TABLE_ID || 'tbl21NcqSKNFghsv'
+const APP_TOKEN = 'JhA1whlyBiVg7nkaJxzcqyk3nYf'
+const TABLE_ID = 'tblUkpm8W8KFEZZc'
 const FIELD_EMAIL = '邮箱'
 const FIELD_PASSWORD = '密码'
 const FIELD_NAME = '账号名'
@@ -56,6 +56,9 @@ async function queryUsers() {
       headers: { 'Authorization': 'Bearer ' + token }
     })
     const data = await res.json()
+    if (!res.ok || data.code) {
+      throw new Error(data.msg || '飞书用户表读取失败')
+    }
     if (data.data?.items) {
       allRecords.push(...data.data.items)
     }
@@ -67,7 +70,7 @@ async function queryUsers() {
 
 async function updateUserCredits(recordId: string, credits: number) {
   const token = await getAccessToken()
-  await fetch(`https://open.feishu.cn/open-apis/bitable/v1/apps/${APP_TOKEN}/tables/${TABLE_ID}/records/${recordId}`, {
+  const res = await fetch(`https://open.feishu.cn/open-apis/bitable/v1/apps/${APP_TOKEN}/tables/${TABLE_ID}/records/${recordId}`, {
     method: 'PUT',
     headers: {
       'Authorization': 'Bearer ' + token,
@@ -75,6 +78,10 @@ async function updateUserCredits(recordId: string, credits: number) {
     },
     body: JSON.stringify({ fields: { [FIELD_CREDITS]: credits } })
   })
+  const data = await res.json()
+  if (!res.ok || data.code) {
+    throw new Error(data.msg || '飞书积分写回失败')
+  }
 }
 
 export async function POST(req: Request) {
