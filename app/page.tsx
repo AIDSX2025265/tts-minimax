@@ -405,6 +405,14 @@ export default function Home() {
                         <button onClick={() => saveAudio(item)} className="px-2 py-1 text-xs text-[#6b6862] hover:text-[#c96442]">保存</button>
                       )}
                       <audio controls src={item.url} className="h-8 w-44" />
+                      <a
+                        href={item.url}
+                        download={`配音-${item.id}.mp3`}
+                        className="shrink-0 rounded-md border border-[#c96442] px-2 py-1 text-xs text-[#c96442] hover:bg-[#f4e4d9]"
+                        aria-label={`下载配音 ${new Date(item.time).toLocaleString()}`}
+                      >
+                        下载
+                      </a>
                     </div>
                   </div>
                 ))}
